@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vokabelkasten</title>
+<meta name="description" content="Englisch-Vokabeln aus Green Line 1 üben">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Vokabeln">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#EEF2F9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F1528" media="(prefers-color-scheme: dark)">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Nunito:wght@500;700;800&family=Patrick+Hand&display=swap">
+<style>
+/* Layout: eine schmale Spalte wie ein Schulheft; die Karteikarte steht im Mittelpunkt, der Karteikasten (5 Fächer) zeigt den Fortschritt */
+:root{
+  --paper:#EEF2F9; --surface:#FFFFFF; --ink:#16213B; --muted:#5A6885; --line:#D3DCEB;
+  --accent:#2756DB; --accent-soft:#DFE7FB; --on-accent:#FFFFFF;
+  --card-line:#CADAF2; --card-rule:#E0544B;
+  --good:#17895A; --good-bg:#E0F3E9; --bad:#C93A31; --bad-bg:#FBE6E3;
+  --mark:#FFDB3D; --shadow:0 1px 2px rgba(22,33,59,.08),0 6px 18px rgba(22,33,59,.08);
+  --blue:#2756DB; --blue-soft:#DFE7FB; --blue-line:#CADAF2; --green:#16803F; --green-soft:#DCF1E3; --green-line:#C5E4CF;
+  --f-display:"Bricolage Grotesque","Avenir Next","Trebuchet MS",system-ui,sans-serif;
+  --f-body:"Nunito",-apple-system,system-ui,"Segoe UI",sans-serif;
+  --f-hand:"Patrick Hand","Chalkboard SE","Comic Neue","Segoe Print",cursive;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --paper:#0F1528; --surface:#19223B; --ink:#E7ECF6; --muted:#9AA7C2; --line:#2B3757;
+  --accent:#7393FF; --accent-soft:#25335E; --on-accent:#0F1528;
+  --card-line:#2A3961; --card-rule:#E8736B;
+  --good:#52CC91; --good-bg:#143426; --bad:#F2847B; --bad-bg:#3B1D1D;
+  --mark:#E5C02F; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.3);
+  --blue:#7393FF; --blue-soft:#25335E; --blue-line:#2A3961; --green:#4FCB85; --green-soft:#173826; --green-line:#244A36;
+  color-scheme:dark}}
+:root{ --orange:#C2540A; --orange-soft:#FDE6D5; --orange-line:#F4D2B8; --purple:#7A3FD1; --purple-soft:#ECE2FB; --purple-line:#DCCCF5 }
+@media (prefers-color-scheme: dark){:root{ --orange:#F59A5B; --orange-soft:#3D2716; --orange-line:#4D3420; --purple:#B48CFF; --purple-soft:#2F2350; --purple-line:#3C2E63 }}
+.acc-blue{--accent:var(--blue);--accent-soft:var(--blue-soft);--card-line:var(--blue-line)}
+.acc-green{--accent:var(--green);--accent-soft:var(--green-soft);--card-line:var(--green-line)}
+.acc-orange{--accent:var(--orange);--accent-soft:var(--orange-soft);--card-line:var(--orange-line)}
+.acc-purple{--accent:var(--purple);--accent-soft:var(--purple-soft);--card-line:var(--purple-line)}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%;margin:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.45;overscroll-behavior-y:none}
+.app{max-width:600px;margin:0 auto;display:flex;flex-direction:column;gap:22px;
+  padding-top:max(18px,env(safe-area-inset-top,0px));padding-bottom:max(40px,calc(env(safe-area-inset-bottom,0px) + 24px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:1.9rem;font-weight:800}
+h2{font-size:1.35rem;font-weight:800}
+h3{font-size:1.05rem;font-weight:600}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:.875rem}
+.label{font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+.stack-s{display:flex;flex-direction:column;gap:6px}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:800;font-size:1.15rem}
+.brand svg{flex:none}
+
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:8px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 18px;border-radius:12px;font-weight:800;min-height:50px;transition:transform .08s ease}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--accent);color:var(--on-accent)}
+.btn-ghost{background:var(--surface);border:1.5px solid var(--line)}
+.btn-link{padding:8px 4px;color:var(--accent);font-weight:800;min-height:44px}
+.btn-wide{width:100%}
+.btn[disabled]{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>.btn{flex:1 1 140px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:14px}
+
+/* wer übt */
+.kids{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kid{background:var(--surface);border:1.5px solid var(--line);border-top:6px solid var(--accent);border-radius:16px;padding:16px;text-align:left;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow)}
+.avatar{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:1.3rem;background:var(--accent-soft);color:var(--accent)}
+.kid strong{font-family:var(--f-display);font-size:1.25rem}
+.kid-add{border-style:dashed;border-top:1.5px dashed var(--line);box-shadow:none;background:transparent}
+.kid-add .avatar{background:var(--line);color:var(--muted)}
+.field{display:flex;flex-direction:column;gap:8px}
+.field input{padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);font-size:1.1rem;width:100%}
+.field input:focus{border-color:var(--accent);outline:none}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.swatch{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);font-weight:700;min-height:44px}
+.swatch i{width:16px;height:16px;border-radius:50%;background:var(--accent)}
+.swatch[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.btn-bad{background:var(--bad);color:var(--surface)}
+.confirm{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--bad-bg);color:var(--bad);border-radius:12px;padding:10px 12px;font-weight:700}
+
+/* Zahlen */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0}
+.stat b{display:block;font-family:var(--f-display);font-size:1.5rem;line-height:1.1}
+.stat span{font-size:.8rem;color:var(--muted)}
+
+/* Karteikasten */
+.box{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;align-items:end}
+.fach{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.fach .stack{width:100%;height:70px;border-radius:8px 8px 4px 4px;background:var(--paper);border:1px solid var(--line);position:relative;overflow:hidden}
+.fach .fill{position:absolute;left:0;right:0;bottom:0;background:repeating-linear-gradient(to top,var(--accent) 0 3px,var(--accent-soft) 3px 5px)}
+.fach.new .fill{background:repeating-linear-gradient(to top,var(--muted) 0 3px,var(--line) 3px 5px)}
+.fach .n{font-weight:800;font-variant-numeric:tabular-nums;font-size:.9rem}
+.fach .t{font-size:.7rem;color:var(--muted);font-weight:700;text-align:center;line-height:1.1}
+
+/* Seitenauswahl */
+.unitgroup{display:flex;flex-direction:column;gap:10px;padding-block:14px;border-top:1px solid var(--line)}
+.unitgroup:first-child{border-top:0;padding-top:0}
+.unithead{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.unithead h3{min-width:0}
+.pages{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:8px}
+.pg{display:flex;flex-direction:column;align-items:flex-start;padding:8px 10px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);text-align:left;min-height:54px}
+.pg b{font-family:var(--f-display);font-size:1.05rem;font-variant-numeric:tabular-nums;line-height:1.2}
+.pg span{font-size:.72rem;color:var(--muted);font-weight:700;font-variant-numeric:tabular-nums}
+.pg[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.pg[aria-pressed="true"] span{color:var(--ink)}
+.range{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.range input{width:88px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);font-size:16px;font-variant-numeric:tabular-nums}
+.range input:focus{border-color:var(--accent);outline:none}
+.sticky{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px;z-index:5}
+.chosen{background:var(--accent-soft);border-radius:12px;padding:10px 12px;font-weight:700}
+
+/* Üben */
+.progress{display:flex;align-items:center;gap:12px}
+.bar{flex:1;height:10px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .3s ease}
+.card{position:relative;border-radius:10px;box-shadow:var(--shadow);min-height:190px;padding:16px 18px 18px;
+  background:linear-gradient(var(--card-rule),var(--card-rule)) 0 50px/100% 2px no-repeat,
+             repeating-linear-gradient(to bottom,transparent 0 35px,var(--card-line) 35px 36px) 0 52px/100% calc(100% - 52px) no-repeat,
+             var(--surface);
+  display:flex;flex-direction:column;gap:6px}
+.card .head{display:flex;justify-content:space-between;align-items:center;height:26px;gap:8px}
+.card .fachtag{font-size:.75rem;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums}
+.card .word{font-family:var(--f-hand);font-size:2.1rem;line-height:36px;padding-top:20px;overflow-wrap:anywhere}
+.card .answer{font-family:var(--f-hand);font-size:1.9rem;line-height:36px;color:var(--accent);overflow-wrap:anywhere;animation:pop .25s ease}
+.wordline{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.speak{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);flex:none}
+.verdict{border-radius:10px;padding:8px 12px;font-weight:700;margin-top:6px}
+.verdict.right{background:var(--good-bg);color:var(--good)}
+.verdict.wrong{background:var(--bad-bg);color:var(--bad)}
+.verdict s{color:var(--ink);text-decoration-color:var(--bad)}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.answerbox{display:flex;gap:8px}
+.answerbox input{flex:1;min-width:0;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);font-size:1.15rem}
+.answerbox input:focus{border-color:var(--accent);outline:none}
+.answerbox .btn{min-width:96px}
+
+/* Ergebnis */
+.result{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.result div{border-radius:12px;padding:12px;text-align:center}
+.result b{display:block;font-family:var(--f-display);font-size:1.8rem;font-variant-numeric:tabular-nums}
+.r1{background:var(--good-bg);color:var(--good)}.r3{background:var(--bad-bg);color:var(--bad)}
+.wlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.wlist li{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.wlist li:last-child{border-bottom:0}
+.wlist .en{font-weight:800;min-width:0;overflow-wrap:anywhere}
+.wlist .de{color:var(--muted);text-align:right;min-width:0;overflow-wrap:anywhere}
+.highlight{background:linear-gradient(transparent 55%,var(--mark) 55%);padding:0 2px}
+.note{font-size:.85rem;color:var(--muted)}
+.foot{font-size:.8rem;color:var(--muted);text-align:center}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:12px;font-weight:700;box-shadow:var(--shadow);z-index:20;max-width:calc(100% - 32px)}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app acc-blue" id="app" aria-live="polite"></div>
+<div class="toast" id="toast" hidden></div>
+<script src="vocab.js"></script>
+<script>
+(() => {
+const DAY = 86400000;
+const INTERVAL = [0, 0, 1, 3, 7, 14];          // Tage bis zur nächsten Wiederholung je Fach (0 = neu)
+const FACH_NAME = ['Neu','Fach 1','Fach 2','Fach 3','Fach 4','Fach 5'];
+const COLORS = {blue:'Blau', green:'Grün', orange:'Orange', purple:'Lila'};
+const UNITS = (window.VOCAB || []);
+const KEY = 'vokabelkasten.v1';
+
+/* ---------- helpers ---------- */
+const app = document.getElementById('app');
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2,'0');
+const dayStr = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const today = () => dayStr(new Date());
+const yesterday = () => dayStr(new Date(Date.now()-DAY));
+const startOfDay = () => { const d=new Date(); d.setHours(0,0,0,0); return d.getTime(); };
+const shuffle = a => { for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
+const pageLabel = p => p ? 'S. '+p : 'ohne Seite';
+function lsGet(k){ try{ return JSON.parse(localStorage.getItem(k) || 'null'); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch(e){ return false; } }
+
+/* ---------- Speicher: alles bleibt auf diesem Gerät ---------- */
+/* Profile (Name, Farbe) und Lernstand liegen nur im Speicher dieses Geräts, nie im Code. */
+const store = lsGet(KEY) || {};
+store.profiles = Array.isArray(store.profiles) ? store.profiles.filter(p=>p&&p.id&&p.name) : [];
+store.kids = store.kids || {}; store.pages = store.pages || {};
+for(const p of store.profiles) if(!store.kids[p.id]) store.kids[p.id] = {xp:0, streak:0, lastDay:'', p:{}};
+const profileOf = id => store.profiles.find(p=>p.id===id);
+const colorOf = p => p && COLORS[p.color] ? p.color : 'blue';
+function createProfile(name, color){
+  const id='p'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
+  store.profiles.push({id, name, color}); store.kids[id]={xp:0, streak:0, lastDay:'', p:{}}; saveNow(); return id;
+}
+function freeColor(){ const used=new Set(store.profiles.map(p=>p.color)); return Object.keys(COLORS).find(c=>!used.has(c)) || 'blue'; }
+let saveTimer;
+function save(){ clearTimeout(saveTimer); saveTimer=setTimeout(()=>{ if(!lsSet(KEY,store)) toast('Lernstand konnte nicht gespeichert werden.'); },150); }
+function saveNow(){ clearTimeout(saveTimer); lsSet(KEY,store); }
+addEventListener('pagehide', saveNow);
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='hidden') saveNow(); });
+try{ navigator.storage && navigator.storage.persist && navigator.storage.persist(); }catch(e){}
+
+/* ---------- Prüfung: streng, keine Tippfehler-Toleranz ----------
+   Egal sind nur Groß-/Kleinschreibung, Leerzeichen am Rand und Satzzeichen (. , ! ? "). */
+function norm(s){
+  return (s||'').toLowerCase().replace(/[’‘`´]/g,"'").replace(/…/g,'...').replace(/[.,!?"“”„]/g,'').replace(/\s+/g,' ').trim();
+}
+function variants(s){ return [norm(s.replace(/\([^)]*\)/g,' ')), norm(s.replace(/[()]/g,''))]; }
+const synonyms = new Map();   // gleiches deutsches Wort -> alle englischen Lösungen
+for(const u of UNITS) for(const w of u.words){ const k=norm(w.de); if(!synonyms.has(k)) synonyms.set(k,[]); synonyms.get(k).push(w.en,...(w.alt||[])); }
+function checkAnswer(input, w){
+  const a=norm(input); if(!a) return 'wrong';
+  const answers=[w.en,...(w.alt||[]),...(synonyms.get(norm(w.de))||[])];
+  return answers.some(x=>variants(x).includes(a)) ? 'right' : 'wrong';
+}
+
+let toastTimer;
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.hidden=false; clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.hidden=true,2600); }
+
+const canSpeak = 'speechSynthesis' in window;
+function speak(text){
+  if(!canSpeak) return;
+  try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text.replace(/\(.*?\)/g,'').replace(/\.\.\./g,'')); u.lang='en-GB'; u.rate=.9; speechSynthesis.speak(u); }catch(e){}
+}
+
+/* ---------- Zustand ---------- */
+const S = { view:'pick', kidId:null, pages:new Set(), sess:null, from:'', to:'', form:null, confirmDel:false };
+const kidInfo = () => profileOf(S.kidId);
+const kidData = () => store.kids[S.kidId];
+function openKid(id){ S.kidId=id; store.last=id; S.pages=new Set(store.pages[id]||[]); S.view='home'; save(); }
+
+/* ---------- Lernlogik ---------- */
+const ALL = []; UNITS.forEach(u=>u.words.forEach(w=>ALL.push({key:u.id+':'+w.id, w})));
+const wordsOnPages = pages => ALL.filter(x=>pages.has(x.w.page||0));
+const boxOf = (k,key) => (k&&k.p&&k.p[key])||{b:0,due:0};
+const isDue = p => p.b===0 || (p.due||0)<=Date.now();
+function boxCounts(k){ const c=[0,0,0,0,0,0]; ALL.forEach(x=>c[boxOf(k,x.key).b]++); return c; }
+const reviewCount = k => ALL.filter(x=>{const p=boxOf(k,x.key); return p.b>0 && isDue(p);}).length;
+const PAGE_INDEX = UNITS.map(u=>{
+  const m=new Map(); u.words.forEach(w=>{ const p=w.page||0; m.set(p,(m.get(p)||0)+1); });
+  return {unit:u, pages:[...m.entries()].sort((a,b)=>a[0]-b[0]).map(([page,count])=>({page,count}))};
+});
+function pagesSummary(set){
+  const ps=[...set].sort((a,b)=>a-b); if(!ps.length) return '';
+  const parts=[]; let s=ps[0], prev=ps[0];
+  for(const p of ps.slice(1).concat([null])){
+    if(p!==null && p===prev+1){ prev=p; continue; }
+    parts.push(s===0?'ohne Seite':(s===prev?'S. '+s:'S. '+s+'–'+prev)); if(p!==null){ s=p; prev=p; }
+  }
+  return parts.join(', ');
+}
+function startSession(onlyDue){
+  const k=kidData(); let pool=wordsOnPages(S.pages);
+  pool = onlyDue ? shuffle(pool.filter(x=>isDue(boxOf(k,x.key)))).sort((a,b)=>boxOf(k,a.key).b-boxOf(k,b.key).b) : shuffle(pool);
+  if(!pool.length){ toast('Auf diesen Seiten gibt es nichts zu üben.'); return false; }
+  store.pages[S.kidId]=[...S.pages]; save();
+  S.sess={items:pool, i:0, res:[], verdict:null};
+  S.view='practice'; return true;
+}
+function startRetry(){
+  const wrong=S.sess.res.filter(r=>r.r!=='right').map(r=>r.item);
+  S.sess={items:shuffle(wrong), i:0, res:[], verdict:null};
+  S.view='practice';
+}
+function grade(r, typed){
+  const s=S.sess, it=s.items[s.i], k=kidData();
+  const p=k.p[it.key]||{b:0,due:0}; let b=p.b;
+  b = r==='right' ? (b===0 ? 2 : Math.min(5,b+1)) : 1;
+  k.p[it.key]={b, due:startOfDay()+INTERVAL[b]*DAY};
+  k.xp=(k.xp||0)+(r==='right'?10:0);
+  if(k.lastDay!==today()){ k.streak = k.lastDay===yesterday() ? (k.streak||0)+1 : 1; k.lastDay=today(); }
+  s.verdict={item:it,r,from:p.b,to:b,typed}; s.res.push(s.verdict); save();
+}
+
+/* ---------- Ansichten ---------- */
+const BOX_ICON='<svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="11" width="26" height="17" rx="3" fill="var(--accent)"/><rect x="7" y="4" width="18" height="12" rx="2" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><line x1="7" y1="8" x2="25" y2="8" stroke="var(--card-rule)" stroke-width="1.5"/><rect x="3" y="15" width="26" height="13" rx="3" fill="var(--accent)"/><rect x="12" y="19" width="8" height="3" rx="1.5" fill="var(--on-accent)"/></svg>';
+const SPEAK_ICON='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+const header = right => `<div class="top"><div class="brand">${BOX_ICON}<span>Vokabelkasten</span></div>${right||''}</div>`;
+const footer = () => `<p class="foot">Vokabeln aus Green Line 1 G9, S. 184–230 · Der Lernstand bleibt auf diesem Gerät.</p>`;
+
+function viewPick(){
+  if(!store.profiles.length){ if(!S.form) S.form={id:null,name:'',color:'blue'}; return viewProfileForm(true); }
+  return header()+
+  `<div class="stack-s"><h1>Wer übt heute?</h1><p class="muted">Du siehst das deutsche Wort und schreibst die englische Vokabel. Was du richtig schreibst, wandert ein Fach weiter.</p></div>
+  <div class="kids">${store.profiles.map(k=>{ const d=store.kids[k.id]; const due=reviewCount(d);
+    return `<button class="kid acc-${colorOf(k)}" data-act="pick" data-id="${esc(k.id)}"><span class="avatar">${esc([...k.name][0].toUpperCase())}</span><strong>${esc(k.name)}</strong><span class="small muted num">${d.xp||0} Punkte${due?` · ${due} zum Wiederholen`:''}</span></button>`;}).join('')}
+    <button class="kid kid-add" data-act="new-profile"><span class="avatar">+</span><strong>Neues Profil</strong><span class="small muted">Für ein weiteres Kind</span></button></div>`+footer();
+}
+
+/* Profil anlegen oder ändern. Der Name wird nur auf diesem Gerät gespeichert. */
+function viewProfileForm(first){
+  const f=S.form, editing=!!f.id;
+  const title = first ? 'Willkommen!' : editing ? 'Profil ändern' : 'Neues Profil';
+  const intro = first ? 'Wie heißt du? Dein Name und dein Lernstand bleiben nur auf diesem Gerät.' : 'Name und Lernstand bleiben nur auf diesem Gerät.';
+  return header(first?'':`<button class="btn-link" data-act="${editing?'home':'back-pick'}">Zurück</button>`)+
+  `<div class="stack-s"><h1>${title}</h1><p class="muted">${intro}</p></div>
+  <form class="panel acc-${f.color}" data-form="profile">
+    <label class="field"><span class="label">Dein Name</span><input id="pname" maxlength="24" autocomplete="off" autocapitalize="words" enterkeyhint="done" placeholder="Vorname" value="${esc(f.name)}"></label>
+    <div class="field"><span class="label">Deine Farbe</span><div class="swatches">${Object.entries(COLORS).map(([c,l])=>`<button type="button" class="swatch acc-${c}" aria-pressed="${f.color===c}" data-act="color" data-color="${c}"><i></i>${l}</button>`).join('')}</div></div>
+    <button class="btn btn-primary btn-wide" type="submit">${editing?'Speichern':'Los geht’s'}</button>
+  </form>
+  ${editing?(S.confirmDel
+    ?`<div class="confirm">Profil und ganzen Lernstand wirklich löschen? <button class="btn btn-bad" data-act="del-yes">Löschen</button><button class="btn-link" data-act="del-no">Behalten</button></div>`
+    :`<button class="btn-link" data-act="del-profile" style="color:var(--bad);align-self:flex-start">Profil löschen</button>`):''}`+(first?footer():'');
+}
+
+function viewHome(){
+  const k=kidData(), info=kidInfo(); const counts=boxCounts(k); const max=Math.max(1,...counts);
+  const learned=ALL.length-counts[0], review=reviewCount(k);
+  const streak=(k.lastDay===today()||k.lastDay===yesterday())?(k.streak||0):0;
+  const last=pagesSummary(S.pages);
+  return header(`<button class="btn-link" data-act="back-pick">Wechseln</button>`)+
+  `<div class="stack-s"><h1>Hallo ${esc(info.name)}!</h1>
+    <p class="muted">${review ? `<span class="highlight num">${review} Vokabeln</span> sind heute zum Wiederholen dran.` : learned ? 'Heute ist nichts zum Wiederholen fällig. Such dir neue Seiten aus!' : 'Such dir aus, welche Seiten du üben willst.'}</p></div>
+  <div class="stats">
+    <div class="stat"><b class="num">${streak}</b><span>${streak===1?'Tag':'Tage'} am Stück</span></div>
+    <div class="stat"><b class="num">${k.xp||0}</b><span>Punkte</span></div>
+    <div class="stat"><b class="num">${counts[5]}</b><span>im Fach 5</span></div>
+  </div>
+  <button class="btn btn-primary btn-wide" data-act="choose-pages">Übung starten</button>
+  ${last?`<p class="small muted" style="margin-top:-12px">Zuletzt geübt: ${esc(last)}</p>`:''}
+  <section class="panel" aria-label="Karteikasten">
+    <div class="top"><h3>Dein Karteikasten</h3><span class="small muted num">${ALL.length} Karten</span></div>
+    <div class="box">${counts.map((c,i)=>`<div class="fach ${i===0?'new':''}"><span class="n">${c}</span><div class="stack"><div class="fill" style="height:${Math.round(c/max*100)}%"></div></div><span class="t">${FACH_NAME[i]}</span></div>`).join('')}</div>
+    <p class="note">Richtig → ein Fach weiter. Falsch → zurück in Fach 1. Fach 2 kommt nach 1 Tag wieder, Fach 3 nach 3, Fach 4 nach 7 und Fach 5 nach 14 Tagen.</p>
+  </section>
+  <button class="btn-link" data-act="edit-profile" style="align-self:center">Name oder Farbe ändern</button>`+footer();
+}
+
+function viewPages(){
+  const k=kidData();
+  const groups=PAGE_INDEX.map(g=>{
+    const allOn=g.pages.every(p=>S.pages.has(p.page));
+    return `<div class="unitgroup"><div class="unithead"><h3>${esc(g.unit.name)}</h3>
+      <button class="btn-link small" data-act="unit-pages" data-id="${esc(g.unit.id)}">${allOn?'Abwählen':'Alle'}</button></div>
+      <div class="pages">${g.pages.map(p=>`<button class="pg" aria-pressed="${S.pages.has(p.page)}" data-act="page" data-page="${p.page}"><b>${p.page||'–'}</b><span>${p.count} Vok.</span></button>`).join('')}</div></div>`;
+  }).join('');
+  const sel=wordsOnPages(S.pages); const due=sel.filter(x=>isDue(boxOf(k,x.key))).length;
+  return header(`<button class="btn-link" data-act="home">Zurück</button>`)+
+  `<div class="stack-s"><h1>Welche Seiten übst du?</h1><p class="muted">Tippe die Seiten aus deinem Englischbuch an, die du heute lernen willst.</p></div>
+  <form class="panel" data-form="range">
+    <span class="label">Seiten von … bis …</span>
+    <div class="range"><input id="from" inputmode="numeric" pattern="[0-9]*" placeholder="z. B. 189" aria-label="Von Seite" value="${esc(S.from)}"><span>bis</span><input id="to" inputmode="numeric" pattern="[0-9]*" placeholder="195" aria-label="Bis Seite" value="${esc(S.to)}"><button class="btn btn-ghost" type="submit">Auswählen</button></div>
+  </form>
+  <section class="panel">${groups}</section>
+  <div class="sticky">
+    ${sel.length?`<div class="chosen">${esc(pagesSummary(S.pages))} · <span class="num">${sel.length}</span> Vokabeln</div>`:'<p class="muted small">Noch keine Seite ausgewählt.</p>'}
+    <button class="btn btn-primary btn-wide" data-act="start" ${sel.length?'':'disabled'}>${sel.length?`Alle ${sel.length} Vokabeln üben`:'Los geht’s'}</button>
+    ${sel.length&&due&&due<sel.length?`<button class="btn btn-ghost btn-wide" data-act="start-due">Nur die ${due} fälligen üben</button>`:''}
+    ${S.pages.size?`<button class="btn-link" data-act="clear-pages">Auswahl löschen</button>`:''}
+  </div>`;
+}
+
+/* Die Übungsansicht wird nur einmal gebaut; danach werden Karte und Fortschritt aktualisiert.
+   So bleibt auf iPhone und iPad die Tastatur offen, und Return führt zur nächsten Karte. */
+function viewPractice(){
+  return `<div class="progress"><button class="btn-link" data-act="quit">Beenden</button><div class="bar" role="progressbar"><i id="pbar"></i></div><span class="small muted num" id="pcount"></span></div>
+  <div class="card" id="card"></div>
+  <form class="answerbox" data-form="type"><input id="answer" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" lang="en" enterkeyhint="go" aria-label="Deine Antwort auf Englisch"><button class="btn btn-primary" type="submit" id="go">Prüfen</button></form>`;
+}
+function updatePractice(){
+  const s=S.sess, it=s.items[s.i], v=s.verdict, k=kidData();
+  document.getElementById('pbar').style.width=Math.round(s.i/s.items.length*100)+'%';
+  document.getElementById('pcount').textContent=(s.i+1)+' / '+s.items.length;
+  const fach=v ? v.to : boxOf(k,it.key).b;
+  const speakBtn=canSpeak?`<button type="button" class="speak" data-act="speak" data-keepfocus data-text="${esc(it.w.en)}" aria-label="Aussprache anhören">${SPEAK_ICON}</button>`:'';
+  document.getElementById('card').innerHTML=
+    `<div class="head"><span class="label">Deutsch · ${esc(pageLabel(it.w.page))}</span><span class="fachtag">${FACH_NAME[fach]}</span></div>
+     <div class="wordline"><div class="word">${esc(it.w.de)}</div></div>
+     ${v?`<div class="wordline"><div class="answer">${esc(it.w.en)}</div>${speakBtn}</div>
+       ${v.r==='right'?`<div class="verdict right">Richtig!${v.to>v.from&&v.from>=1?` Ab ins ${FACH_NAME[v.to]}.`:''}</div>`
+                     :`<div class="verdict wrong">Leider nicht. Du hast <s>${esc(v.typed)}</s> geschrieben.</div>`}`:''}`;
+  const inp=document.getElementById('answer'), go=document.getElementById('go');
+  inp.value=''; inp.placeholder = v ? 'Weiter mit Return …' : 'Auf Englisch …';
+  inp.setAttribute('enterkeyhint', v ? 'next' : 'go');
+  go.textContent = v ? 'Weiter' : 'Prüfen';
+  inp.focus({preventScroll:true});
+}
+
+function viewDone(){
+  const s=S.sess; const r1=s.res.filter(x=>x.r==='right').length, r3=s.res.length-r1;
+  const miss=s.res.filter(x=>x.r!=='right');
+  const msg = !r3 ? 'Alles richtig. Super gemacht!' : r1>=s.res.length/2 ? 'Gut gemacht! Die Fehler üben wir gleich nochmal.' : 'Dranbleiben lohnt sich. Morgen sitzt es schon besser.';
+  return header()+`<div class="stack-s"><h1>Geschafft!</h1><p class="muted">${msg} <span class="highlight num">+${r1*10} Punkte</span></p></div>
+  <div class="result"><div class="r1"><b>${r1}</b>richtig</div><div class="r3"><b>${r3}</b>falsch</div></div>
+  ${miss.length?`<section class="panel"><h3>Diese Wörter üben wir nochmal</h3><ul class="wlist">${miss.map(x=>`<li><span class="en">${esc(x.item.w.en)}</span><span class="de">${esc(x.item.w.de)}</span></li>`).join('')}</ul></section>`:''}
+  <div class="row">${miss.length?`<button class="btn btn-primary" data-act="retry">Fehler nochmal üben</button>`:''}<button class="btn btn-ghost" data-act="home">Zurück zum Kasten</button></div>`;
+}
+
+function render(){
+  if(S.kidId && !kidInfo()){ S.kidId=null; S.view='pick'; }
+  const info=kidInfo();
+  app.className='app acc-'+((S.view==='profile'||(S.view==='pick'&&!store.profiles.length))&&S.form ? S.form.color : colorOf(info));
+  if(S.view==='practice' && app.dataset.view==='practice'){ updatePractice(); return; }
+  app.dataset.view=S.view;
+  app.innerHTML = S.view==='home'?viewHome() : S.view==='pages'?viewPages() : S.view==='practice'?viewPractice() : S.view==='done'?viewDone() : S.view==='profile'?viewProfileForm(false) : viewPick();
+  if(S.view==='practice') updatePractice();
+}
+function renderKeepScroll(){ const y=window.scrollY; render(); window.scrollTo(0,y); }
+function go(view){ document.getElementById('toast').hidden=true; S.view=view; render(); window.scrollTo(0,0); }
+
+/* ---------- Bedienung ---------- */
+document.addEventListener('mousedown', ev=>{ if(ev.target.closest('[data-keepfocus]')) ev.preventDefault(); });
+document.addEventListener('click', ev=>{
+  const el=ev.target.closest('[data-act]'); if(!el) return;
+  const act=el.dataset.act, id=el.dataset.id;
+  switch(act){
+    case 'pick': openKid(id); go('home'); break;
+    case 'back-pick': S.kidId=null; go('pick'); break;
+    case 'home': go(S.kidId?'home':'pick'); break;
+    case 'choose-pages': go('pages'); break;
+    case 'page': { const p=+el.dataset.page; S.pages.has(p)?S.pages.delete(p):S.pages.add(p); renderKeepScroll(); break; }
+    case 'unit-pages': { const g=PAGE_INDEX.find(g=>g.unit.id===id); if(!g) break; const allOn=g.pages.every(p=>S.pages.has(p.page));
+      g.pages.forEach(p=>allOn?S.pages.delete(p.page):S.pages.add(p.page)); renderKeepScroll(); break; }
+    case 'clear-pages': S.pages.clear(); renderKeepScroll(); break;
+    case 'start': if(startSession(false)) go('practice'); break;
+    case 'start-due': if(startSession(true)) go('practice'); break;
+    case 'speak': speak(el.dataset.text); break;
+    case 'quit': go(S.sess.res.length ? 'done' : 'pages'); break;
+    case 'retry': startRetry(); go('practice'); break;
+    case 'new-profile': S.form={id:null,name:'',color:freeColor()}; S.confirmDel=false; go('profile'); break;
+    case 'edit-profile': { const p=kidInfo(); S.form={id:p.id,name:p.name,color:colorOf(p)}; S.confirmDel=false; go('profile'); break; }
+    case 'color': if(S.form){ S.form.color=el.dataset.color; renderKeepScroll(); } break;
+    case 'del-profile': S.confirmDel=true; renderKeepScroll(); break;
+    case 'del-no': S.confirmDel=false; renderKeepScroll(); break;
+    case 'del-yes': { const id=S.form.id; store.profiles=store.profiles.filter(p=>p.id!==id); delete store.kids[id]; delete store.pages[id];
+      if(store.last===id) store.last=null; saveNow(); S.kidId=null; S.form=null; S.confirmDel=false; toast('Profil gelöscht'); go('pick'); break; }
+  }
+});
+document.addEventListener('input', ev=>{
+  if(ev.target.id==='from') S.from=ev.target.value; if(ev.target.id==='to') S.to=ev.target.value;
+  if(ev.target.id==='pname' && S.form) S.form.name=ev.target.value;
+});
+document.addEventListener('submit', ev=>{
+  ev.preventDefault(); const f=ev.target.dataset.form;
+  if(f==='profile'){
+    const name=(S.form.name||'').trim().replace(/\s+/g,' ');
+    if(!name){ toast('Bitte gib deinen Namen ein.'); document.getElementById('pname').focus(); return; }
+    document.activeElement && document.activeElement.blur();
+    if(S.form.id){ const p=profileOf(S.form.id); p.name=name; p.color=S.form.color; saveNow(); S.form=null; toast('Gespeichert'); go('home'); }
+    else { const id=createProfile(name, S.form.color); S.form=null; openKid(id); go('home'); }
+    return;
+  }
+  if(f==='type'){
+    const s=S.sess, inp=document.getElementById('answer');
+    if(s.verdict){ s.i++; s.verdict=null; if(s.i>=s.items.length){ inp.blur(); go('done'); } else render(); return; }
+    const val=inp.value; if(!val.trim()){ inp.focus(); return; }
+    grade(checkAnswer(val,s.items[s.i].w), val.trim()); render();
+  }
+  if(f==='range'){ const a=parseInt(S.from,10), b=parseInt(S.to||S.from,10);
+    if(!a){ toast('Gib eine Seitenzahl ein, z. B. 189 bis 195.'); return; }
+    document.activeElement && document.activeElement.blur();
+    const lo=Math.min(a,b), hi=Math.max(a,b); const avail=new Set(ALL.map(x=>x.w.page||0)); let added=0;
+    for(let p=lo;p<=hi;p++) if(avail.has(p)){ S.pages.add(p); added++; }
+    toast(added?`${added} ${added===1?'Seite':'Seiten'} ausgewählt`:`Auf S. ${lo}${hi>lo?'–'+hi:''} stehen keine Vokabeln.`); renderKeepScroll(); }
+});
+
+/* ---------- Start ---------- */
+if(store.last && profileOf(store.last)) openKid(store.last);
+render();
+if('serviceWorker' in navigator && location.protocol!=='file:') navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();
+</script>
+</body>
+</html>
