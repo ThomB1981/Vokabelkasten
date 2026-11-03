@@ -97,6 +97,10 @@ button{cursor:pointer;border:0;background:none;-webkit-user-select:none;user-sel
 .swatch i{width:16px;height:16px;border-radius:50%;background:var(--accent)}
 .swatch[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
 .btn-bad{background:var(--bad);color:var(--surface)}
+textarea.code{width:100%;min-height:96px;padding:10px 12px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:13px/1.4 ui-monospace,Menlo,monospace;word-break:break-all;resize:vertical}
+textarea.code:focus{border-color:var(--accent);outline:none}
+.filebtn{position:relative;overflow:hidden;cursor:pointer}
+.filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer;font-size:0}
 .confirm{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:var(--bad-bg);color:var(--bad);border-radius:12px;padding:10px 12px;font-weight:700}
 
 /* Zahlen */
@@ -298,13 +302,102 @@ const SPEAK_ICON='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" st
 const header = right => `<div class="top"><div class="brand">${BOX_ICON}<span>Vokabelkasten</span></div>${right||''}</div>`;
 const footer = () => `<p class="foot">Vokabeln aus Green Line 1 G9, S. 184–230 · Der Lernstand bleibt auf diesem Gerät.</p>`;
 
+/* ---------- Sicherung: exportieren und importieren ----------
+   Format: {app:'vokabelkasten', v:1, date, profiles:[{name,color,xp,streak,lastDay,pages,p:{wortId:[fach, fälligInMinuten]}}]}
+   Als Datei (JSON) oder als Code "VK1:" + Base64. */
+const WORD_KEY = new Map(ALL.map(x=>[x.w.id, x.key]));
+function buildBackup(){
+  return {app:'vokabelkasten', v:1, date:new Date().toISOString(), profiles:store.profiles.map(pr=>{
+    const k=store.kids[pr.id]||{}; const p={};
+    for(const [key,val] of Object.entries(k.p||{})){ const wid=key.split(':').pop(); p[wid]=[val.b, Math.round((val.due||0)/60000)]; }
+    return {name:pr.name, color:colorOf(pr), xp:k.xp||0, streak:k.streak||0, lastDay:k.lastDay||'', pages:store.pages[pr.id]||[], p};
+  })};
+}
+const fromB64 = s => new TextDecoder().decode(Uint8Array.from(atob(s), c=>c.charCodeAt(0)));
+function backupCode(){ const json=JSON.stringify(buildBackup()); let bin=''; const bytes=new TextEncoder().encode(json);
+  for(let i=0;i<bytes.length;i+=8192) bin+=String.fromCharCode(...bytes.subarray(i,i+8192)); return 'VK1:'+btoa(bin); }
+function parseBackup(text){
+  let t=(text||'').trim(); if(!t) throw new Error('Die Sicherung ist leer.');
+  if(/^VK1:/i.test(t)){ try{ t=fromB64(t.slice(4).replace(/\s+/g,'')); }catch(e){ throw new Error('Der Code ist unvollständig oder fehlerhaft. Kopiere ihn bitte noch einmal ganz.'); } }
+  let obj; try{ obj=JSON.parse(t); }catch(e){ throw new Error('Das ist keine gültige Sicherung. Prüfe, ob der Code vollständig eingefügt ist.'); }
+  if(!obj || obj.app!=='vokabelkasten' || !Array.isArray(obj.profiles)) throw new Error('Das ist keine Sicherung vom Vokabelkasten.');
+  const profiles=obj.profiles.filter(p=>p && typeof p.name==='string' && p.name.trim()).map(p=>{
+    const prog={}; let n=0;
+    for(const [wid,val] of Object.entries(p.p||{})){ const key=WORD_KEY.get(wid); if(!key||!Array.isArray(val)) continue;
+      const b=Math.max(0,Math.min(5,parseInt(val[0],10)||0)); if(!b) continue; prog[key]={b, due:(+val[1]||0)*60000}; n++; }
+    return {name:p.name.trim().slice(0,24), color:COLORS[p.color]?p.color:'blue', xp:Math.max(0,+p.xp||0), streak:Math.max(0,+p.streak||0),
+      lastDay:typeof p.lastDay==='string'?p.lastDay:'', pages:Array.isArray(p.pages)?p.pages.filter(x=>Number.isInteger(x)):[], p:prog, learned:n};
+  });
+  if(!profiles.length) throw new Error('In der Sicherung ist kein Profil enthalten.');
+  return {date:obj.date, profiles};
+}
+function applyBackup(b){
+  for(const p of b.profiles){
+    let pr=store.profiles.find(x=>x.name.toLowerCase()===p.name.toLowerCase());
+    if(!pr){ pr={id:'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,5), name:p.name, color:p.color}; store.profiles.push(pr); }
+    pr.color=p.color;
+    store.kids[pr.id]={xp:p.xp, streak:p.streak, lastDay:p.lastDay, p:p.p};
+    store.pages[pr.id]=p.pages;
+  }
+  saveNow();
+}
+const fmtDate = iso => { try{ return new Date(iso).toLocaleDateString('de-DE',{day:'numeric',month:'long',year:'numeric'}); }catch(e){ return ''; } };
+
+function viewBackup(){
+  const b=S.importing;
+  const back=S.kidId?'home':'back-pick';
+  const n=store.profiles.length;
+  return header(`<button class="btn-link" data-act="${back}">Zurück</button>`)+
+  `<div class="stack-s"><h1>Lernstand sichern</h1><p class="muted">Mit einer Sicherung nimmst du deinen Lernstand auf ein neues Gerät mit oder holst ihn zurück, falls die App gelöscht wurde.</p></div>
+  ${n?`<section class="panel">
+    <h3>Sicherung erstellen</h3>
+    <p class="small muted">Enthält ${n===1?'das Profil':'alle '+n+' Profile'} auf diesem Gerät: ${store.profiles.map(p=>esc(p.name)).join(', ')}.${store.lastBackup?` Letzte Sicherung: ${esc(fmtDate(store.lastBackup))}.`:' Noch keine Sicherung erstellt.'}</p>
+    <button class="btn btn-primary btn-wide" data-act="export-file">Als Datei sichern oder senden</button>
+    <button class="btn btn-ghost btn-wide" data-act="export-code">Sicherungscode kopieren</button>
+    ${S.codeShown?`<textarea id="codeout" class="code" readonly aria-label="Sicherungscode">${esc(S.codeShown)}</textarea><p class="note">Der Code ist markiert. Kopiere ihn und speichere ihn zum Beispiel in einer Notiz.</p>`:''}
+  </section>`:''}
+  <section class="panel">
+    <h3>Sicherung einspielen</h3>
+    ${b?`<div class="chosen">Gefunden${b.date?` (Sicherung vom ${esc(fmtDate(b.date))})`:''}:</div>
+      <ul class="wlist">${b.profiles.map(p=>{ const exists=store.profiles.some(x=>x.name.toLowerCase()===p.name.toLowerCase());
+        return `<li><span class="en">${esc(p.name)}</span><span class="de">${p.learned} Vokabeln gelernt · ${p.xp} Punkte${exists?'<br><b>ersetzt den Stand auf diesem Gerät</b>':''}</span></li>`;}).join('')}</ul>
+      <div class="row"><button class="btn btn-primary" data-act="import-yes">Übernehmen</button><button class="btn btn-ghost" data-act="import-no">Abbrechen</button></div>`
+    :`<p class="small muted">Wähle eine Sicherungsdatei aus oder füge einen Sicherungscode ein.</p>
+      <label class="btn btn-ghost btn-wide filebtn">Datei auswählen<input type="file" id="importfile" accept=".json,application/json,text/plain"></label>
+      <form class="field" data-form="import"><textarea id="codein" class="code" placeholder="VK1:…" aria-label="Sicherungscode einfügen" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
+      <button class="btn btn-ghost btn-wide" type="submit">Code einspielen</button></form>`}
+  </section>`;
+}
+async function exportFile(){
+  const json=JSON.stringify(buildBackup());
+  const name='vokabelkasten-sicherung-'+today()+'.json';
+  const file=new File([json], name, {type:'application/json'});
+  try{
+    if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], title:'Vokabelkasten-Sicherung'}); markBackup(); return; }
+  }catch(e){ if(e && e.name==='AbortError') return; }
+  const url=URL.createObjectURL(file); const a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 4000); markBackup();
+}
+function markBackup(){ store.lastBackup=new Date().toISOString(); saveNow(); toast('Sicherung erstellt'); renderKeepScroll(); }
+async function exportCode(){
+  const code=backupCode();
+  try{ await navigator.clipboard.writeText(code); S.codeShown=null; toast('Sicherungscode kopiert'); store.lastBackup=new Date().toISOString(); saveNow(); renderKeepScroll(); return; }catch(e){}
+  S.codeShown=code; store.lastBackup=new Date().toISOString(); saveNow(); renderKeepScroll();
+  const ta=document.getElementById('codeout'); if(ta){ ta.focus(); ta.select(); ta.setSelectionRange(0, code.length); }
+}
+function startImport(text){
+  try{ S.importing=parseBackup(text); renderKeepScroll(); }
+  catch(e){ toast(e.message||'Die Sicherung konnte nicht gelesen werden.'); }
+}
+
 function viewPick(){
   if(!store.profiles.length){ if(!S.form) S.form={id:null,name:'',color:'blue'}; return viewProfileForm(true); }
   return header()+
   `<div class="stack-s"><h1>Wer übt heute?</h1><p class="muted">Du siehst das deutsche Wort und schreibst die englische Vokabel. Was du richtig schreibst, wandert ein Fach weiter.</p></div>
   <div class="kids">${store.profiles.map(k=>{ const d=store.kids[k.id]; const due=reviewCount(d);
     return `<button class="kid acc-${colorOf(k)}" data-act="pick" data-id="${esc(k.id)}"><span class="avatar">${esc([...k.name][0].toUpperCase())}</span><strong>${esc(k.name)}</strong><span class="small muted num">${d.xp||0} Punkte${due?` · ${due} zum Wiederholen`:''}</span></button>`;}).join('')}
-    <button class="kid kid-add" data-act="new-profile"><span class="avatar">+</span><strong>Neues Profil</strong><span class="small muted">Für ein weiteres Kind</span></button></div>`+footer();
+    <button class="kid kid-add" data-act="new-profile"><span class="avatar">+</span><strong>Neues Profil</strong><span class="small muted">Für ein weiteres Kind</span></button></div>
+  <button class="btn-link" data-act="backup" style="align-self:center">Lernstand sichern oder einspielen</button>`+footer();
 }
 
 /* Profil anlegen oder ändern. Der Name wird nur auf diesem Gerät gespeichert. */
@@ -321,7 +414,8 @@ function viewProfileForm(first){
   </form>
   ${editing?(S.confirmDel
     ?`<div class="confirm">Profil und ganzen Lernstand wirklich löschen? <button class="btn btn-bad" data-act="del-yes">Löschen</button><button class="btn-link" data-act="del-no">Behalten</button></div>`
-    :`<button class="btn-link" data-act="del-profile" style="color:var(--bad);align-self:flex-start">Profil löschen</button>`):''}`+(first?footer():'');
+    :`<button class="btn-link" data-act="del-profile" style="color:var(--bad);align-self:flex-start">Profil löschen</button>`):''}
+  ${first?`<button class="btn-link" data-act="backup" style="align-self:center">Ich habe schon eine Sicherung</button>`:''}`+(first?footer():'');
 }
 
 function viewHome(){
@@ -344,7 +438,7 @@ function viewHome(){
     <div class="box">${counts.map((c,i)=>`<div class="fach ${i===0?'new':''}"><span class="n">${c}</span><div class="stack"><div class="fill" style="height:${Math.round(c/max*100)}%"></div></div><span class="t">${FACH_NAME[i]}</span></div>`).join('')}</div>
     <p class="note">Richtig → ein Fach weiter. Falsch → zurück in Fach 1. Fach 2 kommt nach 1 Tag wieder, Fach 3 nach 3, Fach 4 nach 7 und Fach 5 nach 14 Tagen.</p>
   </section>
-  <button class="btn-link" data-act="edit-profile" style="align-self:center">Name oder Farbe ändern</button>`+footer();
+  <div class="row" style="justify-content:center;gap:4px 18px"><button class="btn-link" data-act="edit-profile">Name oder Farbe ändern</button><button class="btn-link" data-act="backup">Lernstand sichern</button></div>`+footer();
 }
 
 function viewPages(){
@@ -413,7 +507,7 @@ function render(){
   app.className='app acc-'+((S.view==='profile'||(S.view==='pick'&&!store.profiles.length))&&S.form ? S.form.color : colorOf(info));
   if(S.view==='practice' && app.dataset.view==='practice'){ updatePractice(); return; }
   app.dataset.view=S.view;
-  app.innerHTML = S.view==='home'?viewHome() : S.view==='pages'?viewPages() : S.view==='practice'?viewPractice() : S.view==='done'?viewDone() : S.view==='profile'?viewProfileForm(false) : viewPick();
+  app.innerHTML = S.view==='home'?viewHome() : S.view==='pages'?viewPages() : S.view==='practice'?viewPractice() : S.view==='done'?viewDone() : S.view==='profile'?viewProfileForm(false) : S.view==='backup'?viewBackup() : viewPick();
   if(S.view==='practice') updatePractice();
 }
 function renderKeepScroll(){ const y=window.scrollY; render(); window.scrollTo(0,y); }
@@ -443,9 +537,22 @@ document.addEventListener('click', ev=>{
     case 'color': if(S.form){ S.form.color=el.dataset.color; renderKeepScroll(); } break;
     case 'del-profile': S.confirmDel=true; renderKeepScroll(); break;
     case 'del-no': S.confirmDel=false; renderKeepScroll(); break;
+    case 'backup': S.importing=null; S.codeShown=null; go('backup'); break;
+    case 'export-file': exportFile(); break;
+    case 'export-code': exportCode(); break;
+    case 'import-no': S.importing=null; renderKeepScroll(); break;
+    case 'import-yes': { const n=S.importing.profiles.length; applyBackup(S.importing); S.importing=null;
+      if(S.kidId && !profileOf(S.kidId)) S.kidId=null;
+      toast(n===1?'Lernstand übernommen':`${n} Profile übernommen`); go(S.kidId?'home':'pick'); break; }
     case 'del-yes': { const id=S.form.id; store.profiles=store.profiles.filter(p=>p.id!==id); delete store.kids[id]; delete store.pages[id];
       if(store.last===id) store.last=null; saveNow(); S.kidId=null; S.form=null; S.confirmDel=false; toast('Profil gelöscht'); go('pick'); break; }
   }
+});
+document.addEventListener('change', async ev=>{
+  if(ev.target.id!=='importfile') return;
+  const f=ev.target.files && ev.target.files[0]; if(!f) return;
+  try{ startImport(await f.text()); }catch(e){ toast('Die Datei konnte nicht gelesen werden.'); }
+  ev.target.value='';
 });
 document.addEventListener('input', ev=>{
   if(ev.target.id==='from') S.from=ev.target.value; if(ev.target.id==='to') S.to=ev.target.value;
@@ -453,6 +560,7 @@ document.addEventListener('input', ev=>{
 });
 document.addEventListener('submit', ev=>{
   ev.preventDefault(); const f=ev.target.dataset.form;
+  if(f==='import'){ startImport(document.getElementById('codein').value); return; }
   if(f==='profile'){
     const name=(S.form.name||'').trim().replace(/\s+/g,' ');
     if(!name){ toast('Bitte gib deinen Namen ein.'); document.getElementById('pname').focus(); return; }
