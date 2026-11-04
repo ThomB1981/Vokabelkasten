@@ -292,12 +292,26 @@ function openCount(){
   store.pages[S.kidId]=[...S.pages]; save();
   S.count=clampCount((store.counts||{})[S.kidId]||MIN_WORDS, total); S.countTotal=total; return true;
 }
+/* Gewichteter Zufall: falsch beantwortete (Fach 1) und fällige Vokabeln kommen öfter dran,
+   neue normal, noch nicht fällige selten. Jede Vokabel bleibt möglich. */
+const WEIGHT = {wrong:6, due:4, fresh:2, later:1};
+function wordKind(k, x){
+  const p=boxOf(k,x.key);
+  if(p.b===0) return 'fresh';
+  if(p.b===1) return 'wrong';
+  return isDue(p) ? 'due' : 'later';
+}
+function weightedPick(pool, n, k){
+  // Efraimidis-Spirakis: Schlüssel = Zufall^(1/Gewicht), die n größten werden gezogen
+  return pool.map(x=>({x, key:Math.pow(Math.random(), 1/WEIGHT[wordKind(k,x)])}))
+    .sort((a,b)=>b.key-a.key).slice(0,n).map(o=>o.x);
+}
 function startSession(){
   const pool=wordsOnPages(S.pages);
   if(pool.length<MIN_WORDS){ toast(`Wähle Seiten mit mindestens ${MIN_WORDS} Vokabeln aus.`); return false; }
   const n=clampCount(S.count, pool.length);
   store.counts=store.counts||{}; store.counts[S.kidId]=n; save();
-  S.sess={items:shuffle(pool.slice()).slice(0,n), i:0, res:[], verdict:null};
+  S.sess={items:shuffle(weightedPick(pool, n, kidData())), i:0, res:[], verdict:null};
   S.view='practice'; return true;
 }
 function startRetry(){
@@ -487,6 +501,9 @@ function viewPages(){
 function viewCount(){
   const total=S.countTotal, n=S.count;
   const quick=[20,30,40,50].filter(x=>x<total);
+  const k=kidData(), sel=wordsOnPages(S.pages);
+  const wrong=sel.filter(x=>wordKind(k,x)==='wrong').length, due=sel.filter(x=>wordKind(k,x)==='due').length;
+  const prio=[wrong?`${wrong} ${wrong===1?'Vokabel, die du':'Vokabeln, die du'} zuletzt falsch hattest`:'', due?`${due} ${due===1?'Vokabel, die':'Vokabeln, die'} zum Wiederholen dran ${due===1?'ist':'sind'}`:''].filter(Boolean);
   return header(`<button class="btn-link" data-act="choose-pages">Zurück</button>`)+
   `<div class="stack-s"><h1>Wie viele Vokabeln übst du?</h1><p class="muted">Aus ${esc(pagesSummary(S.pages))} (${total} Vokabeln) wählt der Vokabelkasten zufällig so viele aus, wie du möchtest. Mindestens ${MIN_WORDS}.</p></div>
   <section class="panel">
@@ -496,6 +513,7 @@ function viewCount(){
       <button class="cbtn" data-act="count-plus" aria-label="${STEP} mehr" ${n>=total?'disabled':''}>+</button>
     </div>
     <div class="chips">${quick.map(x=>`<button class="chip" aria-pressed="${n===x}" data-act="count-set" data-n="${x}">${x}</button>`).join('')}<button class="chip" aria-pressed="${n===total}" data-act="count-set" data-n="${total}">Alle ${total}</button></div>
+    ${prio.length&&n<total?`<p class="note">Öfter dabei: ${esc(prio.join(' und '))}.</p>`:''}
   </section>
   <button class="btn btn-primary btn-wide" data-act="start">${n} Vokabeln üben</button>`;
 }
