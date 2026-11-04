@@ -134,6 +134,16 @@ textarea.code:focus{border-color:var(--accent);outline:none}
 .range input:focus{border-color:var(--accent);outline:none}
 .sticky{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px;z-index:5}
 .chosen{background:var(--accent-soft);border-radius:12px;padding:10px 12px;font-weight:700}
+.hint{color:var(--bad);font-weight:700}
+.counter{display:grid;grid-template-columns:64px 1fr 64px;align-items:center;gap:12px}
+.cbtn{width:64px;height:64px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-family:var(--f-display);font-size:2rem;font-weight:800;line-height:1}
+.cbtn[disabled]{opacity:.35;cursor:default}
+.cval{display:flex;flex-direction:column;align-items:center}
+.cval b{font-family:var(--f-display);font-size:3.2rem;font-weight:800;line-height:1.05;color:var(--accent)}
+.cval span{font-size:.85rem;color:var(--muted);font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chip{padding:8px 16px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);font-weight:800;min-height:44px;font-variant-numeric:tabular-nums}
+.chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
 
 /* Üben */
 .progress{display:flex;align-items:center;gap:12px}
@@ -273,12 +283,21 @@ function pagesSummary(set){
   }
   return parts.join(', ');
 }
-function startSession(onlyDue){
-  const k=kidData(); let pool=wordsOnPages(S.pages);
-  pool = onlyDue ? shuffle(pool.filter(x=>isDue(boxOf(k,x.key)))).sort((a,b)=>boxOf(k,a.key).b-boxOf(k,b.key).b) : shuffle(pool);
-  if(!pool.length){ toast('Auf diesen Seiten gibt es nichts zu üben.'); return false; }
+/* Mindestens 20 Vokabeln pro Übung; welche es sind, entscheidet der Zufall. */
+const MIN_WORDS = 20, STEP = 5;
+function clampCount(n, total){ return Math.max(MIN_WORDS, Math.min(total, Math.round(n)||MIN_WORDS)); }
+function openCount(){
+  const total=wordsOnPages(S.pages).length;
+  if(total<MIN_WORDS){ toast(`Wähle Seiten mit mindestens ${MIN_WORDS} Vokabeln aus.`); return false; }
   store.pages[S.kidId]=[...S.pages]; save();
-  S.sess={items:pool, i:0, res:[], verdict:null};
+  S.count=clampCount((store.counts||{})[S.kidId]||MIN_WORDS, total); S.countTotal=total; return true;
+}
+function startSession(){
+  const pool=wordsOnPages(S.pages);
+  if(pool.length<MIN_WORDS){ toast(`Wähle Seiten mit mindestens ${MIN_WORDS} Vokabeln aus.`); return false; }
+  const n=clampCount(S.count, pool.length);
+  store.counts=store.counts||{}; store.counts[S.kidId]=n; save();
+  S.sess={items:shuffle(pool.slice()).slice(0,n), i:0, res:[], verdict:null};
   S.view='practice'; return true;
 }
 function startRetry(){
@@ -449,7 +468,7 @@ function viewPages(){
       <button class="btn-link small" data-act="unit-pages" data-id="${esc(g.unit.id)}">${allOn?'Abwählen':'Alle'}</button></div>
       <div class="pages">${g.pages.map(p=>`<button class="pg" aria-pressed="${S.pages.has(p.page)}" data-act="page" data-page="${p.page}"><b>${p.page||'–'}</b><span>${p.count} Vok.</span></button>`).join('')}</div></div>`;
   }).join('');
-  const sel=wordsOnPages(S.pages); const due=sel.filter(x=>isDue(boxOf(k,x.key))).length;
+  const sel=wordsOnPages(S.pages); const missing=Math.max(0,MIN_WORDS-sel.length);
   return header(`<button class="btn-link" data-act="home">Zurück</button>`)+
   `<div class="stack-s"><h1>Welche Seiten übst du?</h1><p class="muted">Tippe die Seiten aus deinem Englischbuch an, die du heute lernen willst.</p></div>
   <form class="panel" data-form="range">
@@ -459,10 +478,26 @@ function viewPages(){
   <section class="panel">${groups}</section>
   <div class="sticky">
     ${sel.length?`<div class="chosen">${esc(pagesSummary(S.pages))} · <span class="num">${sel.length}</span> Vokabeln</div>`:'<p class="muted small">Noch keine Seite ausgewählt.</p>'}
-    <button class="btn btn-primary btn-wide" data-act="start" ${sel.length?'':'disabled'}>${sel.length?`Alle ${sel.length} Vokabeln üben`:'Los geht’s'}</button>
-    ${sel.length&&due&&due<sel.length?`<button class="btn btn-ghost btn-wide" data-act="start-due">Nur die ${due} fälligen üben</button>`:''}
+    ${sel.length&&missing?`<p class="small hint">Du brauchst mindestens ${MIN_WORDS} Vokabeln. Wähle noch Seiten mit ${missing} ${missing===1?'Vokabel':'Vokabeln'} dazu.</p>`:''}
+    <button class="btn btn-primary btn-wide" data-act="to-count" ${missing?'disabled':''}>Weiter</button>
     ${S.pages.size?`<button class="btn-link" data-act="clear-pages">Auswahl löschen</button>`:''}
   </div>`;
+}
+
+function viewCount(){
+  const total=S.countTotal, n=S.count;
+  const quick=[20,30,40,50].filter(x=>x<total);
+  return header(`<button class="btn-link" data-act="choose-pages">Zurück</button>`)+
+  `<div class="stack-s"><h1>Wie viele Vokabeln übst du?</h1><p class="muted">Aus ${esc(pagesSummary(S.pages))} (${total} Vokabeln) wählt der Vokabelkasten zufällig so viele aus, wie du möchtest. Mindestens ${MIN_WORDS}.</p></div>
+  <section class="panel">
+    <div class="counter">
+      <button class="cbtn" data-act="count-minus" aria-label="${STEP} weniger" ${n<=MIN_WORDS?'disabled':''}>−</button>
+      <div class="cval"><b class="num">${n}</b><span>${n===total?'alle Vokabeln':'von '+total}</span></div>
+      <button class="cbtn" data-act="count-plus" aria-label="${STEP} mehr" ${n>=total?'disabled':''}>+</button>
+    </div>
+    <div class="chips">${quick.map(x=>`<button class="chip" aria-pressed="${n===x}" data-act="count-set" data-n="${x}">${x}</button>`).join('')}<button class="chip" aria-pressed="${n===total}" data-act="count-set" data-n="${total}">Alle ${total}</button></div>
+  </section>
+  <button class="btn btn-primary btn-wide" data-act="start">${n} Vokabeln üben</button>`;
 }
 
 /* Die Übungsansicht wird nur einmal gebaut; danach werden Karte und Fortschritt aktualisiert.
@@ -507,7 +542,7 @@ function render(){
   app.className='app acc-'+((S.view==='profile'||(S.view==='pick'&&!store.profiles.length))&&S.form ? S.form.color : colorOf(info));
   if(S.view==='practice' && app.dataset.view==='practice'){ updatePractice(); return; }
   app.dataset.view=S.view;
-  app.innerHTML = S.view==='home'?viewHome() : S.view==='pages'?viewPages() : S.view==='practice'?viewPractice() : S.view==='done'?viewDone() : S.view==='profile'?viewProfileForm(false) : S.view==='backup'?viewBackup() : viewPick();
+  app.innerHTML = S.view==='home'?viewHome() : S.view==='pages'?viewPages() : S.view==='count'?viewCount() : S.view==='practice'?viewPractice() : S.view==='done'?viewDone() : S.view==='profile'?viewProfileForm(false) : S.view==='backup'?viewBackup() : viewPick();
   if(S.view==='practice') updatePractice();
 }
 function renderKeepScroll(){ const y=window.scrollY; render(); window.scrollTo(0,y); }
@@ -527,8 +562,11 @@ document.addEventListener('click', ev=>{
     case 'unit-pages': { const g=PAGE_INDEX.find(g=>g.unit.id===id); if(!g) break; const allOn=g.pages.every(p=>S.pages.has(p.page));
       g.pages.forEach(p=>allOn?S.pages.delete(p.page):S.pages.add(p.page)); renderKeepScroll(); break; }
     case 'clear-pages': S.pages.clear(); renderKeepScroll(); break;
-    case 'start': if(startSession(false)) go('practice'); break;
-    case 'start-due': if(startSession(true)) go('practice'); break;
+    case 'to-count': if(openCount()) go('count'); break;
+    case 'count-minus': S.count=clampCount(S.count===S.countTotal&&S.count%STEP ? Math.floor(S.count/STEP)*STEP : S.count-STEP, S.countTotal); renderKeepScroll(); break;
+    case 'count-plus': S.count=clampCount(S.count+STEP, S.countTotal); renderKeepScroll(); break;
+    case 'count-set': S.count=clampCount(+el.dataset.n, S.countTotal); renderKeepScroll(); break;
+    case 'start': if(startSession()) go('practice'); break;
     case 'speak': speak(el.dataset.text); break;
     case 'quit': go(S.sess.res.length ? 'done' : 'pages'); break;
     case 'retry': startRetry(); go('practice'); break;
