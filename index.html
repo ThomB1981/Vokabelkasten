@@ -25,7 +25,7 @@
   --card-line:#CADAF2; --card-rule:#E0544B;
   --good:#17895A; --good-bg:#E0F3E9; --bad:#C93A31; --bad-bg:#FBE6E3;
   --mark:#FFDB3D; --shadow:0 1px 2px rgba(22,33,59,.08),0 6px 18px rgba(22,33,59,.08);
-  --blue:#2756DB; --blue-soft:#DFE7FB; --blue-line:#CADAF2; --green:#16803F; --green-soft:#DCF1E3; --green-line:#C5E4CF;
+  --blue:#2756DB; --blue-soft:#DFE7FB; --blue-line:#CADAF2; --green:#16803F; --green-soft:#DCF1E3; --green-line:#C5E4CF; --book-green:#6FA94A; --book-green-ink:#3F7A22;
   --f-display:"Bricolage Grotesque","Avenir Next","Trebuchet MS",system-ui,sans-serif;
   --f-body:"Nunito",-apple-system,system-ui,"Segoe UI",sans-serif;
   --f-hand:"Patrick Hand","Chalkboard SE","Comic Neue","Segoe Print",cursive;
@@ -37,7 +37,7 @@
   --card-line:#2A3961; --card-rule:#E8736B;
   --good:#52CC91; --good-bg:#143426; --bad:#F2847B; --bad-bg:#3B1D1D;
   --mark:#E5C02F; --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 18px rgba(0,0,0,.3);
-  --blue:#7393FF; --blue-soft:#25335E; --blue-line:#2A3961; --green:#4FCB85; --green-soft:#173826; --green-line:#244A36;
+  --blue:#7393FF; --blue-soft:#25335E; --blue-line:#2A3961; --green:#4FCB85; --green-soft:#173826; --green-line:#244A36; --book-green:#5E9440; --book-green-ink:#8FCB6A;
   color-scheme:dark}}
 :root{ --orange:#C2540A; --orange-soft:#FDE6D5; --orange-line:#F4D2B8; --purple:#7A3FD1; --purple-soft:#ECE2FB; --purple-line:#DCCCF5 }
 @media (prefers-color-scheme: dark){:root{ --orange:#F59A5B; --orange-soft:#3D2716; --orange-line:#4D3420; --purple:#B48CFF; --purple-soft:#2F2350; --purple-line:#3C2E63 }}
@@ -135,6 +135,14 @@ textarea.code:focus{border-color:var(--accent);outline:none}
 .sticky{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom,0px));background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px;z-index:5}
 .chosen{background:var(--accent-soft);border-radius:12px;padding:10px 12px;font-weight:700}
 .hint{color:var(--bad);font-weight:700}
+.greenbox{border:2px solid var(--book-green);border-radius:12px;overflow:hidden;background:var(--surface)}
+.greenbox .label{display:block;padding:8px 14px;background:var(--book-green);color:#fff;letter-spacing:.04em}
+.gwords{display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 14px 12px}
+.gwords span{font-weight:700}
+.choicecol{display:flex;flex-direction:column;gap:10px}
+.choicebtn{flex-direction:column;align-items:center;gap:2px;min-height:64px}
+.choicebtn span{font-weight:700;font-size:.85rem;opacity:.85}
+.gtag{color:var(--book-green-ink)}
 .counter{display:grid;grid-template-columns:64px 1fr 64px;align-items:center;gap:12px}
 .cbtn{width:64px;height:64px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-family:var(--f-display);font-size:2rem;font-weight:800;line-height:1}
 .cbtn[disabled]{opacity:.35;cursor:default}
@@ -286,10 +294,18 @@ function pagesSummary(set){
 /* Mindestens 20 Vokabeln pro Übung; welche es sind, entscheidet der Zufall. */
 const MIN_WORDS = 20, STEP = 5;
 function clampCount(n, total){ return Math.max(MIN_WORDS, Math.min(total, Math.round(n)||MIN_WORDS)); }
-function openCount(){
-  const total=wordsOnPages(S.pages).length;
-  if(total<MIN_WORDS){ toast(`Wähle Seiten mit mindestens ${MIN_WORDS} Vokabeln aus.`); return false; }
+/* Grüne Kästen: vor jeder Übung wird gefragt, ob ihre Vokabeln mit abgefragt werden. */
+const boxWordsOnPages = () => wordsOnPages(S.pages).filter(x=>x.w.box);
+const practicePool = () => wordsOnPages(S.pages).filter(x=>S.withBox || !x.w.box);
+function afterPages(){
+  if(wordsOnPages(S.pages).length<MIN_WORDS){ toast(`Wähle Seiten mit mindestens ${MIN_WORDS} Vokabeln aus.`); return null; }
   store.pages[S.kidId]=[...S.pages]; save();
+  if(boxWordsOnPages().length){ S.withBox=null; return 'boxes'; }
+  S.withBox=false; return openCount() ? 'count' : null;
+}
+function openCount(){
+  const total=practicePool().length;
+  if(total<MIN_WORDS){ toast(`Wähle Seiten mit mindestens ${MIN_WORDS} Vokabeln aus.`); return false; }
   S.count=clampCount((store.counts||{})[S.kidId]||MIN_WORDS, total); S.countTotal=total; return true;
 }
 /* Gewichteter Zufall: falsch beantwortete (Fach 1) und fällige Vokabeln kommen öfter dran,
@@ -307,7 +323,7 @@ function weightedPick(pool, n, k){
     .sort((a,b)=>b.key-a.key).slice(0,n).map(o=>o.x);
 }
 function startSession(){
-  const pool=wordsOnPages(S.pages);
+  const pool=practicePool();
   if(pool.length<MIN_WORDS){ toast(`Wähle Seiten mit mindestens ${MIN_WORDS} Vokabeln aus.`); return false; }
   const n=clampCount(S.count, pool.length);
   store.counts=store.counts||{}; store.counts[S.kidId]=n; save();
@@ -501,11 +517,12 @@ function viewPages(){
 function viewCount(){
   const total=S.countTotal, n=S.count;
   const quick=[20,30,40,50].filter(x=>x<total);
-  const k=kidData(), sel=wordsOnPages(S.pages);
+  const k=kidData(), sel=practicePool();
   const wrong=sel.filter(x=>wordKind(k,x)==='wrong').length, due=sel.filter(x=>wordKind(k,x)==='due').length;
   const prio=[wrong?`${wrong} ${wrong===1?'Vokabel, die du':'Vokabeln, die du'} zuletzt falsch hattest`:'', due?`${due} ${due===1?'Vokabel, die':'Vokabeln, die'} zum Wiederholen dran ${due===1?'ist':'sind'}`:''].filter(Boolean);
-  return header(`<button class="btn-link" data-act="choose-pages">Zurück</button>`)+
-  `<div class="stack-s"><h1>Wie viele Vokabeln übst du?</h1><p class="muted">Aus ${esc(pagesSummary(S.pages))} (${total} Vokabeln) wählt der Vokabelkasten zufällig so viele aus, wie du möchtest. Mindestens ${MIN_WORDS}.</p></div>
+  const boxNote = S.withBox===true ? ' mit den grünen Kästen' : (S.withBox===false && boxWordsOnPages().length ? ' ohne die grünen Kästen' : '');
+  return header(`<button class="btn-link" data-act="${boxWordsOnPages().length?'to-boxes':'choose-pages'}">Zurück</button>`)+
+  `<div class="stack-s"><h1>Wie viele Vokabeln übst du?</h1><p class="muted">Aus ${esc(pagesSummary(S.pages))}${boxNote} (${total} Vokabeln) wählt der Vokabelkasten zufällig so viele aus, wie du möchtest. Mindestens ${MIN_WORDS}.</p></div>
   <section class="panel">
     <div class="counter">
       <button class="cbtn" data-act="count-minus" aria-label="${STEP} weniger" ${n<=MIN_WORDS?'disabled':''}>−</button>
@@ -516,6 +533,20 @@ function viewCount(){
     ${prio.length&&n<total?`<p class="note">Öfter dabei: ${esc(prio.join(' und '))}.</p>`:''}
   </section>
   <button class="btn btn-primary btn-wide" data-act="start">${n} Vokabeln üben</button>`;
+}
+
+function viewBoxes(){
+  const all=wordsOnPages(S.pages), box=all.filter(x=>x.w.box), without=all.length-box.length;
+  const titles=[...new Set(box.map(x=>x.w.page))].sort((a,b)=>a-b);
+  const tooFew=without<MIN_WORDS;
+  return header(`<button class="btn-link" data-act="choose-pages">Zurück</button>`)+
+  `<div class="stack-s"><h1>Grüne Kästen auch üben?</h1><p class="muted">Auf ${titles.length===1?'Seite':'den Seiten'} ${esc(titles.join(', '))} stehen ${box.length} Vokabeln in grünen Kästen. Sollen die heute mit abgefragt werden?</p></div>
+  <div class="greenbox"><span class="label">Aus den grünen Kästen</span><div class="gwords">${box.slice(0,6).map(x=>`<span>${esc(x.w.de)}</span>`).join('')}${box.length>6?`<span class="muted">… und ${box.length-6} weitere</span>`:''}</div></div>
+  <div class="choicecol">
+    <button class="btn btn-primary btn-wide choicebtn" data-act="box-yes"><b>Ja, mit grünen Kästen</b><span>${all.length} Vokabeln</span></button>
+    <button class="btn btn-ghost btn-wide choicebtn" data-act="box-no" ${tooFew?'disabled':''}><b>Nein, ohne grüne Kästen</b><span>${without} Vokabeln</span></button>
+    ${tooFew?`<p class="small hint">Ohne die grünen Kästen sind es nur ${without} Vokabeln. Für „Nein“ brauchst du mindestens ${MIN_WORDS}. Wähle dafür noch Seiten dazu.</p>`:''}
+  </div>`;
 }
 
 /* Die Übungsansicht wird nur einmal gebaut; danach werden Karte und Fortschritt aktualisiert.
@@ -532,7 +563,7 @@ function updatePractice(){
   const fach=v ? v.to : boxOf(k,it.key).b;
   const speakBtn=canSpeak?`<button type="button" class="speak" data-act="speak" data-keepfocus data-text="${esc(it.w.en)}" aria-label="Aussprache anhören">${SPEAK_ICON}</button>`:'';
   document.getElementById('card').innerHTML=
-    `<div class="head"><span class="label">Deutsch · ${esc(pageLabel(it.w.page))}</span><span class="fachtag">${FACH_NAME[fach]}</span></div>
+    `<div class="head"><span class="label">Deutsch · ${esc(pageLabel(it.w.page))}${it.w.box?' · <span class="gtag">grüner Kasten</span>':''}</span><span class="fachtag">${FACH_NAME[fach]}</span></div>
      <div class="wordline"><div class="word">${esc(it.w.de)}</div></div>
      ${v?`<div class="wordline"><div class="answer">${esc(it.w.en)}</div>${speakBtn}</div>
        ${v.r==='right'?`<div class="verdict right">Richtig!${v.to>v.from&&v.from>=1?` Ab ins ${FACH_NAME[v.to]}.`:''}</div>`
@@ -560,7 +591,7 @@ function render(){
   app.className='app acc-'+((S.view==='profile'||(S.view==='pick'&&!store.profiles.length))&&S.form ? S.form.color : colorOf(info));
   if(S.view==='practice' && app.dataset.view==='practice'){ updatePractice(); return; }
   app.dataset.view=S.view;
-  app.innerHTML = S.view==='home'?viewHome() : S.view==='pages'?viewPages() : S.view==='count'?viewCount() : S.view==='practice'?viewPractice() : S.view==='done'?viewDone() : S.view==='profile'?viewProfileForm(false) : S.view==='backup'?viewBackup() : viewPick();
+  app.innerHTML = S.view==='home'?viewHome() : S.view==='pages'?viewPages() : S.view==='count'?viewCount() : S.view==='boxes'?viewBoxes() : S.view==='practice'?viewPractice() : S.view==='done'?viewDone() : S.view==='profile'?viewProfileForm(false) : S.view==='backup'?viewBackup() : viewPick();
   if(S.view==='practice') updatePractice();
 }
 function renderKeepScroll(){ const y=window.scrollY; render(); window.scrollTo(0,y); }
@@ -580,7 +611,10 @@ document.addEventListener('click', ev=>{
     case 'unit-pages': { const g=PAGE_INDEX.find(g=>g.unit.id===id); if(!g) break; const allOn=g.pages.every(p=>S.pages.has(p.page));
       g.pages.forEach(p=>allOn?S.pages.delete(p.page):S.pages.add(p.page)); renderKeepScroll(); break; }
     case 'clear-pages': S.pages.clear(); renderKeepScroll(); break;
-    case 'to-count': if(openCount()) go('count'); break;
+    case 'to-count': { const next=afterPages(); if(next) go(next); break; }
+    case 'to-boxes': go('boxes'); break;
+    case 'box-yes': S.withBox=true; if(openCount()) go('count'); break;
+    case 'box-no': S.withBox=false; if(openCount()) go('count'); break;
     case 'count-minus': S.count=clampCount(S.count===S.countTotal&&S.count%STEP ? Math.floor(S.count/STEP)*STEP : S.count-STEP, S.countTotal); renderKeepScroll(); break;
     case 'count-plus': S.count=clampCount(S.count+STEP, S.countTotal); renderKeepScroll(); break;
     case 'count-set': S.count=clampCount(+el.dataset.n, S.countTotal); renderKeepScroll(); break;
