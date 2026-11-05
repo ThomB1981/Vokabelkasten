@@ -297,8 +297,14 @@ function clampCount(n, total){ return Math.max(MIN_WORDS, Math.min(total, Math.r
 /* Grüne Kästen: vor jeder Übung wird gefragt, ob ihre Vokabeln mit abgefragt werden. */
 const boxWordsOnPages = () => wordsOnPages(S.pages).filter(x=>x.w.box);
 const practicePool = () => wordsOnPages(S.pages).filter(x=>S.withBox || !x.w.box);
+/* Mindestens 20 gilt nur, wenn die Anzahl gewählt wird. Wer die grünen Kästen weglässt,
+   übt einfach alle übrigen Vokabeln der Seiten, egal wie viele es sind. */
+function pageCheck(){
+  const sel=wordsOnPages(S.pages), box=sel.filter(x=>x.w.box).length, rest=sel.length-box;
+  return {total:sel.length, box, rest, ok: sel.length>=MIN_WORDS || (box>0 && rest>0)};
+}
 function afterPages(){
-  if(wordsOnPages(S.pages).length<MIN_WORDS){ toast(`Wähle Seiten mit mindestens ${MIN_WORDS} Vokabeln aus.`); return null; }
+  if(!pageCheck().ok){ toast(`Wähle Seiten mit mindestens ${MIN_WORDS} Vokabeln aus.`); return null; }
   store.pages[S.kidId]=[...S.pages]; save();
   if(boxWordsOnPages().length){ S.withBox=null; return 'boxes'; }
   S.withBox=false; return openCount() ? 'count' : null;
@@ -328,6 +334,12 @@ function startSession(){
   const n=clampCount(S.count, pool.length);
   store.counts=store.counts||{}; store.counts[S.kidId]=n; save();
   S.sess={items:shuffle(weightedPick(pool, n, kidData())), i:0, res:[], verdict:null};
+  S.view='practice'; return true;
+}
+function startWithoutBoxes(){
+  const pool=wordsOnPages(S.pages).filter(x=>!x.w.box);
+  if(!pool.length){ toast('Auf diesen Seiten stehen nur Vokabeln aus grünen Kästen.'); return false; }
+  S.sess={items:shuffle(pool.slice()), i:0, res:[], verdict:null};
   S.view='practice'; return true;
 }
 function startRetry(){
@@ -498,7 +510,7 @@ function viewPages(){
       <button class="btn-link small" data-act="unit-pages" data-id="${esc(g.unit.id)}">${allOn?'Abwählen':'Alle'}</button></div>
       <div class="pages">${g.pages.map(p=>`<button class="pg" aria-pressed="${S.pages.has(p.page)}" data-act="page" data-page="${p.page}"><b>${p.page||'–'}</b><span>${p.count} Vok.</span></button>`).join('')}</div></div>`;
   }).join('');
-  const sel=wordsOnPages(S.pages); const missing=Math.max(0,MIN_WORDS-sel.length);
+  const sel=wordsOnPages(S.pages); const pc=pageCheck(); const missing=pc.ok?0:Math.max(0,MIN_WORDS-sel.length);
   return header(`<button class="btn-link" data-act="home">Zurück</button>`)+
   `<div class="stack-s"><h1>Welche Seiten übst du?</h1><p class="muted">Tippe die Seiten aus deinem Englischbuch an, die du heute lernen willst.</p></div>
   <form class="panel" data-form="range">
@@ -538,14 +550,15 @@ function viewCount(){
 function viewBoxes(){
   const all=wordsOnPages(S.pages), box=all.filter(x=>x.w.box), without=all.length-box.length;
   const titles=[...new Set(box.map(x=>x.w.page))].sort((a,b)=>a-b);
-  const tooFew=without<MIN_WORDS;
+  const yesTooFew=all.length<MIN_WORDS, noneLeft=without===0;
   return header(`<button class="btn-link" data-act="choose-pages">Zurück</button>`)+
   `<div class="stack-s"><h1>Grüne Kästen auch üben?</h1><p class="muted">Auf ${titles.length===1?'Seite':'den Seiten'} ${esc(titles.join(', '))} stehen ${box.length} Vokabeln in grünen Kästen. Sollen die heute mit abgefragt werden?</p></div>
   <div class="greenbox"><span class="label">Aus den grünen Kästen</span><div class="gwords">${box.slice(0,6).map(x=>`<span>${esc(x.w.de)}</span>`).join('')}${box.length>6?`<span class="muted">… und ${box.length-6} weitere</span>`:''}</div></div>
   <div class="choicecol">
-    <button class="btn btn-primary btn-wide choicebtn" data-act="box-yes"><b>Ja, mit grünen Kästen</b><span>${all.length} Vokabeln</span></button>
-    <button class="btn btn-ghost btn-wide choicebtn" data-act="box-no" ${tooFew?'disabled':''}><b>Nein, ohne grüne Kästen</b><span>${without} Vokabeln</span></button>
-    ${tooFew?`<p class="small hint">Ohne die grünen Kästen sind es nur ${without} Vokabeln. Für „Nein“ brauchst du mindestens ${MIN_WORDS}. Wähle dafür noch Seiten dazu.</p>`:''}
+    <button class="btn btn-primary btn-wide choicebtn" data-act="box-yes" ${yesTooFew?'disabled':''}><b>Ja, mit grünen Kästen</b><span>${all.length} Vokabeln · Anzahl wählst du gleich</span></button>
+    ${yesTooFew?`<p class="small hint">Mit den grünen Kästen sind es ${all.length} Vokabeln. Dafür brauchst du mindestens ${MIN_WORDS}. Wähle noch Seiten dazu oder übe ohne die Kästen.</p>`:''}
+    <button class="btn btn-ghost btn-wide choicebtn" data-act="box-no" ${noneLeft?'disabled':''}><b>Nein, ohne grüne Kästen</b><span>${noneLeft?'keine Vokabeln übrig':`alle ${without} ${without===1?'Vokabel':'Vokabeln'} werden abgefragt`}</span></button>
+    ${noneLeft?`<p class="small hint">Auf diesen Seiten stehen nur Vokabeln aus grünen Kästen.</p>`:''}
   </div>`;
 }
 
@@ -614,7 +627,7 @@ document.addEventListener('click', ev=>{
     case 'to-count': { const next=afterPages(); if(next) go(next); break; }
     case 'to-boxes': go('boxes'); break;
     case 'box-yes': S.withBox=true; if(openCount()) go('count'); break;
-    case 'box-no': S.withBox=false; if(openCount()) go('count'); break;
+    case 'box-no': S.withBox=false; if(startWithoutBoxes()) go('practice'); break;
     case 'count-minus': S.count=clampCount(S.count===S.countTotal&&S.count%STEP ? Math.floor(S.count/STEP)*STEP : S.count-STEP, S.countTotal); renderKeepScroll(); break;
     case 'count-plus': S.count=clampCount(S.count+STEP, S.countTotal); renderKeepScroll(); break;
     case 'count-set': S.count=clampCount(+el.dataset.n, S.countTotal); renderKeepScroll(); break;
