@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Vokabelkasten</title>
-<meta name="description" content="Englisch-Vokabeln aus Green Line 1 üben">
+<title>Lernkasten</title>
+<meta name="description" content="Englisch-Vokabeln und deutsche Rechtschreibung üben">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Vokabeln">
+<meta name="apple-mobile-web-app-title" content="Lernkasten">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#EEF2F9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0F1528" media="(prefers-color-scheme: dark)">
@@ -192,6 +192,42 @@ textarea.code:focus{border-color:var(--accent);outline:none}
 .note{font-size:.85rem;color:var(--muted)}
 .foot{font-size:.8rem;color:var(--muted);text-align:center}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:12px;font-weight:700;box-shadow:var(--shadow);z-index:20;max-width:calc(100% - 32px)}
+/* Fächer */
+.subjects{display:flex;flex-direction:column;gap:12px}
+.subject{display:flex;align-items:center;gap:14px;background:var(--surface);border:1.5px solid var(--line);border-left:6px solid var(--accent);border-radius:16px;padding:16px;text-align:left;box-shadow:var(--shadow);width:100%}
+.subject .ic{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-family:var(--f-display);font-weight:800;font-size:1.15rem;flex:none}
+.subject strong{font-family:var(--f-display);font-size:1.25rem;display:block;line-height:1.2}
+.subject .sub{font-size:.85rem;color:var(--muted);display:block}
+.subject .due{display:inline-block;margin-top:4px;font-size:.8rem;font-weight:800;color:var(--accent)}
+.subject .go{margin-left:auto;font-size:1.6rem;color:var(--muted);flex:none}
+/* Rechtschreibung */
+.topiclist{display:flex;flex-direction:column;gap:8px}
+.topic{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);text-align:left;min-height:54px;width:100%}
+.topic[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.topic b{font-weight:800;display:block}
+.topic small{font-size:.78rem;color:var(--muted);font-weight:700}
+.topic .cnt{font-size:.8rem;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums;flex:none}
+.topic.mine{border-style:dashed}
+.listen{display:flex;gap:10px;flex-wrap:wrap;padding-top:22px}
+.listen .btn{flex:1 1 150px}
+.parts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.parts .chip{min-height:40px;padding:6px 14px}
+.tip{background:var(--accent-soft);border-radius:10px;padding:8px 12px;font-size:.9rem;margin-top:6px}
+.card .answer mark{background:var(--mark);color:inherit;border-radius:4px;padding:0 1px}
+.ctx{color:var(--muted);font-size:.95rem}
+.dictbox{display:flex;flex-direction:column;gap:8px}
+.dictbox textarea{width:100%;min-height:104px;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:1.15rem/1.45 var(--f-body);resize:none}
+.dictbox textarea:focus{border-color:var(--accent);outline:none}
+.sent{font-family:var(--f-hand);font-size:1.4rem;line-height:36px;overflow-wrap:anywhere}
+.sent .bad{background:var(--bad-bg);color:var(--bad);border-radius:4px;padding:0 2px;text-decoration:underline wavy var(--bad);text-underline-offset:4px}
+.sent .pun{background:var(--mark);color:var(--ink);border-radius:4px;padding:0 3px}
+.sent .gap{display:inline-block;min-width:1.2em;border-bottom:2px solid var(--bad)}
+.sentlabel{font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-top:8px}
+.verdict.half{background:var(--orange-soft);color:var(--orange)}
+.dlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.dlist li{border-bottom:1px dashed var(--line);padding-bottom:10px}
+.dlist li:last-child{border-bottom:0}
+.dlist .sent{font-size:1.25rem;line-height:1.5}
 [hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -200,6 +236,7 @@ textarea.code:focus{border-color:var(--accent);outline:none}
 <div class="app acc-blue" id="app" aria-live="polite"></div>
 <div class="toast" id="toast" hidden></div>
 <script src="vocab.js"></script>
+<script src="deutsch.js"></script>
 <script>
 (() => {
 const DAY = 86400000;
@@ -228,11 +265,12 @@ const store = lsGet(KEY) || {};
 store.profiles = Array.isArray(store.profiles) ? store.profiles.filter(p=>p&&p.id&&p.name) : [];
 store.kids = store.kids || {}; store.pages = store.pages || {};
 for(const p of store.profiles) if(!store.kids[p.id]) store.kids[p.id] = {xp:0, streak:0, lastDay:'', p:{}};
+for(const id in store.kids){ const k=store.kids[id]; k.d=k.d||{}; k.dx=k.dx||{}; k.dt=k.dt||{}; }
 const profileOf = id => store.profiles.find(p=>p.id===id);
 const colorOf = p => p && COLORS[p.color] ? p.color : 'blue';
 function createProfile(name, color){
   const id='p'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);
-  store.profiles.push({id, name, color}); store.kids[id]={xp:0, streak:0, lastDay:'', p:{}}; saveNow(); return id;
+  store.profiles.push({id, name, color}); store.kids[id]={xp:0, streak:0, lastDay:'', p:{}, d:{}, dx:{}, dt:{}}; saveNow(); return id;
 }
 function freeColor(){ const used=new Set(store.profiles.map(p=>p.color)); return Object.keys(COLORS).find(c=>!used.has(c)) || 'blue'; }
 let saveTimer;
@@ -269,7 +307,8 @@ function speak(text){
 const S = { view:'pick', kidId:null, pages:new Set(), sess:null, from:'', to:'', form:null, confirmDel:false };
 const kidInfo = () => profileOf(S.kidId);
 const kidData = () => store.kids[S.kidId];
-function openKid(id){ S.kidId=id; store.last=id; S.pages=new Set(store.pages[id]||[]); S.view='home'; save(); }
+function openKid(id){ S.kidId=id; store.last=id; S.pages=new Set(store.pages[id]||[]); S.view='hub'; save(); }
+function touchDay(k){ if(k.lastDay!==today()){ k.streak = k.lastDay===yesterday() ? (k.streak||0)+1 : 1; k.lastDay=today(); } }
 
 /* ---------- Lernlogik ---------- */
 const ALL = []; UNITS.forEach(u=>u.words.forEach(w=>ALL.push({key:u.id+':'+w.id, w})));
@@ -353,25 +392,26 @@ function grade(r, typed){
   b = r==='right' ? (b===0 ? 2 : Math.min(5,b+1)) : 1;
   k.p[it.key]={b, due:startOfDay()+INTERVAL[b]*DAY};
   k.xp=(k.xp||0)+(r==='right'?10:0);
-  if(k.lastDay!==today()){ k.streak = k.lastDay===yesterday() ? (k.streak||0)+1 : 1; k.lastDay=today(); }
+  touchDay(k);
   s.verdict={item:it,r,from:p.b,to:b,typed}; s.res.push(s.verdict); save();
 }
 
 /* ---------- Ansichten ---------- */
 const BOX_ICON='<svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="11" width="26" height="17" rx="3" fill="var(--accent)"/><rect x="7" y="4" width="18" height="12" rx="2" fill="var(--surface)" stroke="var(--ink)" stroke-width="1.5"/><line x1="7" y1="8" x2="25" y2="8" stroke="var(--card-rule)" stroke-width="1.5"/><rect x="3" y="15" width="26" height="13" rx="3" fill="var(--accent)"/><rect x="12" y="19" width="8" height="3" rx="1.5" fill="var(--on-accent)"/></svg>';
 const SPEAK_ICON='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
-const header = right => `<div class="top"><div class="brand">${BOX_ICON}<span>Vokabelkasten</span></div>${right||''}</div>`;
-const footer = () => `<p class="foot">Vokabeln aus Green Line 1 G9, S. 184–230 · Der Lernstand bleibt auf diesem Gerät.</p>`;
+const header = right => `<div class="top"><div class="brand">${BOX_ICON}<span>Lernkasten</span></div>${right||''}</div>`;
+const footer = () => `<p class="foot">Englisch: Green Line 1 G9, S. 184–230 · Deutsch: Rechtschreibung 5. Klasse · Der Lernstand bleibt auf diesem Gerät.</p>`;
 
 /* ---------- Sicherung: exportieren und importieren ----------
    Format: {app:'vokabelkasten', v:1, date, profiles:[{name,color,xp,streak,lastDay,pages,p:{wortId:[fach, fälligInMinuten]}}]}
    Als Datei (JSON) oder als Code "VK1:" + Base64. */
 const WORD_KEY = new Map(ALL.map(x=>[x.w.id, x.key]));
 function buildBackup(){
-  return {app:'vokabelkasten', v:1, date:new Date().toISOString(), profiles:store.profiles.map(pr=>{
+  return {app:'vokabelkasten', v:2, date:new Date().toISOString(), profiles:store.profiles.map(pr=>{
     const k=store.kids[pr.id]||{}; const p={};
     for(const [key,val] of Object.entries(k.p||{})){ const wid=key.split(':').pop(); p[wid]=[val.b, Math.round((val.due||0)/60000)]; }
-    return {name:pr.name, color:colorOf(pr), xp:k.xp||0, streak:k.streak||0, lastDay:k.lastDay||'', pages:store.pages[pr.id]||[], p};
+    const d={}; for(const [key,val] of Object.entries(k.d||{})) d[key]=[val.b, Math.round((val.due||0)/60000)];
+    return {name:pr.name, color:colorOf(pr), xp:k.xp||0, streak:k.streak||0, lastDay:k.lastDay||'', pages:store.pages[pr.id]||[], p, d, dx:k.dx||{}, dt:k.dt||{}};
   })};
 }
 const fromB64 = s => new TextDecoder().decode(Uint8Array.from(atob(s), c=>c.charCodeAt(0)));
@@ -381,13 +421,19 @@ function parseBackup(text){
   let t=(text||'').trim(); if(!t) throw new Error('Die Sicherung ist leer.');
   if(/^VK1:/i.test(t)){ try{ t=fromB64(t.slice(4).replace(/\s+/g,'')); }catch(e){ throw new Error('Der Code ist unvollständig oder fehlerhaft. Kopiere ihn bitte noch einmal ganz.'); } }
   let obj; try{ obj=JSON.parse(t); }catch(e){ throw new Error('Das ist keine gültige Sicherung. Prüfe, ob der Code vollständig eingefügt ist.'); }
-  if(!obj || obj.app!=='vokabelkasten' || !Array.isArray(obj.profiles)) throw new Error('Das ist keine Sicherung vom Vokabelkasten.');
+  if(!obj || obj.app!=='vokabelkasten' || !Array.isArray(obj.profiles)) throw new Error('Das ist keine Sicherung vom Lernkasten.');
   const profiles=obj.profiles.filter(p=>p && typeof p.name==='string' && p.name.trim()).map(p=>{
     const prog={}; let n=0;
     for(const [wid,val] of Object.entries(p.p||{})){ const key=WORD_KEY.get(wid); if(!key||!Array.isArray(val)) continue;
       const b=Math.max(0,Math.min(5,parseInt(val[0],10)||0)); if(!b) continue; prog[key]={b, due:(+val[1]||0)*60000}; n++; }
+    const dx={}; if(p.dx && typeof p.dx==='object') for(const [w,v] of Object.entries(p.dx)) if(w && v && typeof v.s==='string') dx[w.slice(0,40)]={s:v.s.slice(0,300), f:!!v.f};
+    const d={}; let dn=0;
+    if(p.d && typeof p.d==='object') for(const [key,val] of Object.entries(p.d)){ if(!Array.isArray(val)) continue;
+      if(!(key.startsWith('d:') && DKEY.has(key)) && !(key.startsWith('x:') && dx[key.slice(2)])) continue;
+      const b=Math.max(0,Math.min(5,parseInt(val[0],10)||0)); if(!b) continue; d[key]={b, due:(+val[1]||0)*60000}; dn++; }
+    const dt={}; if(p.dt && typeof p.dt==='object') for(const [key,val] of Object.entries(p.dt)) if(+val>0) dt[key]=+val;
     return {name:p.name.trim().slice(0,24), color:COLORS[p.color]?p.color:'blue', xp:Math.max(0,+p.xp||0), streak:Math.max(0,+p.streak||0),
-      lastDay:typeof p.lastDay==='string'?p.lastDay:'', pages:Array.isArray(p.pages)?p.pages.filter(x=>Number.isInteger(x)):[], p:prog, learned:n};
+      lastDay:typeof p.lastDay==='string'?p.lastDay:'', pages:Array.isArray(p.pages)?p.pages.filter(x=>Number.isInteger(x)):[], p:prog, learned:n, d, dx, dt, dlearned:dn};
   });
   if(!profiles.length) throw new Error('In der Sicherung ist kein Profil enthalten.');
   return {date:obj.date, profiles};
@@ -397,7 +443,7 @@ function applyBackup(b){
     let pr=store.profiles.find(x=>x.name.toLowerCase()===p.name.toLowerCase());
     if(!pr){ pr={id:'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,5), name:p.name, color:p.color}; store.profiles.push(pr); }
     pr.color=p.color;
-    store.kids[pr.id]={xp:p.xp, streak:p.streak, lastDay:p.lastDay, p:p.p};
+    store.kids[pr.id]={xp:p.xp, streak:p.streak, lastDay:p.lastDay, p:p.p, d:p.d, dx:p.dx, dt:p.dt};
     store.pages[pr.id]=p.pages;
   }
   saveNow();
@@ -406,7 +452,7 @@ const fmtDate = iso => { try{ return new Date(iso).toLocaleDateString('de-DE',{d
 
 function viewBackup(){
   const b=S.importing;
-  const back=S.kidId?'home':'back-pick';
+  const back=S.kidId?'hub':'back-pick';
   const n=store.profiles.length;
   return header(`<button class="btn-link" data-act="${back}">Zurück</button>`)+
   `<div class="stack-s"><h1>Lernstand sichern</h1><p class="muted">Mit einer Sicherung nimmst du deinen Lernstand auf ein neues Gerät mit oder holst ihn zurück, falls die App gelöscht wurde.</p></div>
@@ -421,7 +467,7 @@ function viewBackup(){
     <h3>Sicherung einspielen</h3>
     ${b?`<div class="chosen">Gefunden${b.date?` (Sicherung vom ${esc(fmtDate(b.date))})`:''}:</div>
       <ul class="wlist">${b.profiles.map(p=>{ const exists=store.profiles.some(x=>x.name.toLowerCase()===p.name.toLowerCase());
-        return `<li><span class="en">${esc(p.name)}</span><span class="de">${p.learned} Vokabeln gelernt · ${p.xp} Punkte${exists?'<br><b>ersetzt den Stand auf diesem Gerät</b>':''}</span></li>`;}).join('')}</ul>
+        return `<li><span class="en">${esc(p.name)}</span><span class="de">${p.learned} Vokabeln · ${p.dlearned} Deutsch-Wörter · ${p.xp} Punkte${exists?'<br><b>ersetzt den Stand auf diesem Gerät</b>':''}</span></li>`;}).join('')}</ul>
       <div class="row"><button class="btn btn-primary" data-act="import-yes">Übernehmen</button><button class="btn btn-ghost" data-act="import-no">Abbrechen</button></div>`
     :`<p class="small muted">Wähle eine Sicherungsdatei aus oder füge einen Sicherungscode ein.</p>
       <label class="btn btn-ghost btn-wide filebtn">Datei auswählen<input type="file" id="importfile" accept=".json,application/json,text/plain"></label>
@@ -431,10 +477,10 @@ function viewBackup(){
 }
 async function exportFile(){
   const json=JSON.stringify(buildBackup());
-  const name='vokabelkasten-sicherung-'+today()+'.json';
+  const name='lernkasten-sicherung-'+today()+'.json';
   const file=new File([json], name, {type:'application/json'});
   try{
-    if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], title:'Vokabelkasten-Sicherung'}); markBackup(); return; }
+    if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], title:'Lernkasten-Sicherung'}); markBackup(); return; }
   }catch(e){ if(e && e.name==='AbortError') return; }
   const url=URL.createObjectURL(file); const a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(url), 4000); markBackup();
@@ -454,8 +500,8 @@ function startImport(text){
 function viewPick(){
   if(!store.profiles.length){ if(!S.form) S.form={id:null,name:'',color:'blue'}; return viewProfileForm(true); }
   return header()+
-  `<div class="stack-s"><h1>Wer übt heute?</h1><p class="muted">Du siehst das deutsche Wort und schreibst die englische Vokabel. Was du richtig schreibst, wandert ein Fach weiter.</p></div>
-  <div class="kids">${store.profiles.map(k=>{ const d=store.kids[k.id]; const due=reviewCount(d);
+  `<div class="stack-s"><h1>Wer übt heute?</h1><p class="muted">Englisch-Vokabeln und deutsche Rechtschreibung. Was du richtig schreibst, wandert im Karteikasten ein Fach weiter.</p></div>
+  <div class="kids">${store.profiles.map(k=>{ const d=store.kids[k.id]; const due=reviewCount(d)+dReview(d);
     return `<button class="kid acc-${colorOf(k)}" data-act="pick" data-id="${esc(k.id)}"><span class="avatar">${esc([...k.name][0].toUpperCase())}</span><strong>${esc(k.name)}</strong><span class="small muted num">${d.xp||0} Punkte${due?` · ${due} zum Wiederholen`:''}</span></button>`;}).join('')}
     <button class="kid kid-add" data-act="new-profile"><span class="avatar">+</span><strong>Neues Profil</strong><span class="small muted">Für ein weiteres Kind</span></button></div>
   <button class="btn-link" data-act="backup" style="align-self:center">Lernstand sichern oder einspielen</button>`+footer();
@@ -466,7 +512,7 @@ function viewProfileForm(first){
   const f=S.form, editing=!!f.id;
   const title = first ? 'Willkommen!' : editing ? 'Profil ändern' : 'Neues Profil';
   const intro = first ? 'Wie heißt du? Dein Name und dein Lernstand bleiben nur auf diesem Gerät.' : 'Name und Lernstand bleiben nur auf diesem Gerät.';
-  return header(first?'':`<button class="btn-link" data-act="${editing?'home':'back-pick'}">Zurück</button>`)+
+  return header(first?'':`<button class="btn-link" data-act="${editing?'hub':'back-pick'}">Zurück</button>`)+
   `<div class="stack-s"><h1>${title}</h1><p class="muted">${intro}</p></div>
   <form class="panel acc-${f.color}" data-form="profile">
     <label class="field"><span class="label">Dein Name</span><input id="pname" maxlength="24" autocomplete="off" autocapitalize="words" enterkeyhint="done" placeholder="Vorname" value="${esc(f.name)}"></label>
@@ -484,8 +530,8 @@ function viewHome(){
   const learned=ALL.length-counts[0], review=reviewCount(k);
   const streak=(k.lastDay===today()||k.lastDay===yesterday())?(k.streak||0):0;
   const last=pagesSummary(S.pages);
-  return header(`<button class="btn-link" data-act="back-pick">Wechseln</button>`)+
-  `<div class="stack-s"><h1>Hallo ${esc(info.name)}!</h1>
+  return header(`<button class="btn-link" data-act="hub">Fächer</button>`)+
+  `<div class="stack-s"><span class="label">Englisch</span><h1>Vokabeln</h1>
     <p class="muted">${review ? `<span class="highlight num">${review} Vokabeln</span> sind heute zum Wiederholen dran.` : learned ? 'Heute ist nichts zum Wiederholen fällig. Such dir neue Seiten aus!' : 'Such dir aus, welche Seiten du üben willst.'}</p></div>
   <div class="stats">
     <div class="stat"><b class="num">${streak}</b><span>${streak===1?'Tag':'Tage'} am Stück</span></div>
@@ -499,7 +545,7 @@ function viewHome(){
     <div class="box">${counts.map((c,i)=>`<div class="fach ${i===0?'new':''}"><span class="n">${c}</span><div class="stack"><div class="fill" style="height:${Math.round(c/max*100)}%"></div></div><span class="t">${FACH_NAME[i]}</span></div>`).join('')}</div>
     <p class="note">Richtig → ein Fach weiter. Falsch → zurück in Fach 1. Fach 2 kommt nach 1 Tag wieder, Fach 3 nach 3, Fach 4 nach 7 und Fach 5 nach 14 Tagen.</p>
   </section>
-  <div class="row" style="justify-content:center;gap:4px 18px"><button class="btn-link" data-act="edit-profile">Name oder Farbe ändern</button><button class="btn-link" data-act="backup">Lernstand sichern</button></div>`+footer();
+  `+footer();
 }
 
 function viewPages(){
@@ -598,17 +644,458 @@ function viewDone(){
   <div class="row">${miss.length?`<button class="btn btn-primary" data-act="retry">Fehler nochmal üben</button>`:''}<button class="btn btn-ghost" data-act="home">Zurück zum Kasten</button></div>`;
 }
 
+/* =====================================================================
+   Deutsch: Rechtschreibung
+   Lernwörter: Die App spricht ein Wort (mit Beispielsatz) vor, das Kind schreibt es.
+   Diktat: Die App liest 5 oder 10 Sätze vor, das Kind schreibt Satz für Satz.
+   Groß- und Kleinschreibung zählt. Falsch geschriebene Wörter landen bei „Meine Fehlerwörter“.
+   ===================================================================== */
+const DE = window.DEUTSCH || {topics:[], words:{}, texts:[]};
+const DTOPIC = new Map(DE.topics.map(t=>[t.id,t]));
+const PREFIX = /^(der|die|das|er|sie|es|ich|du|wir|ihr) (.+)$/;
+const DWORDS = [], DKEY = new Map();
+for(const t of DE.topics) for(const e of (DE.words[t.id]||[])){
+  const w=Array.isArray(e)?e[0]:e, s=Array.isArray(e)?(e[1]||''):'';
+  const key='d:'+w; if(DKEY.has(key)) continue;
+  const m=w.match(PREFIX); const item={key, w, s, t:t.id, core:m?m[2]:w};
+  DWORDS.push(item); DKEY.set(key,item);
+}
+const CORE = new Map(); DWORDS.forEach(x=>{ if(!CORE.has(x.core)) CORE.set(x.core,x); });
+const lcFirst = s => s.charAt(0).toLowerCase()+s.slice(1);
+const ucFirst = s => s.charAt(0).toUpperCase()+s.slice(1);
+const plural = (n,one,many) => n+' '+(n===1?one:many);
+
+function dkid(k){ k=k||kidData(); if(!k) return null; k.d=k.d||{}; k.dx=k.dx||{}; k.dt=k.dt||{}; return k; }
+function dItem(key, k){
+  if(key.startsWith('d:')) return DKEY.get(key)||null;
+  const w=key.slice(2), x=(k||dkid()).dx[w];
+  return x ? {key, w, s:x.s, t:'mine', core:w, first:!!x.f} : null;
+}
+const dBox = (k,key) => (k&&k.d&&k.d[key])||{b:0,due:0};
+function dKeys(k){ return DWORDS.map(x=>x.key).concat(Object.keys((k&&k.dx)||{}).map(w=>'x:'+w)); }
+function dCounts(k){ const c=[0,0,0,0,0,0]; dKeys(k).forEach(key=>c[dBox(k,key).b]++); return c; }
+function dReview(k){ if(!k) return 0; return Object.entries(k.d||{}).filter(([key,p])=>p.b>0 && isDue(p) && (key.startsWith('d:')?DKEY.has(key):(k.dx||{})[key.slice(2)])).length; }
+function dMine(k){ return Object.entries((k&&k.d)||{}).filter(([key,p])=>p.b===1).map(([key])=>dItem(key,k)).filter(Boolean); }
+function dKind(k, x){ const p=dBox(k,x.key); if(p.b===0) return 'fresh'; if(p.b===1) return 'wrong'; return isDue(p)?'due':'later'; }
+function dPick(pool, n, k){
+  return pool.map(x=>({x, key:Math.pow(Math.random(), 1/WEIGHT[dKind(k,x)])})).sort((a,b)=>b.key-a.key).slice(0,n).map(o=>o.x);
+}
+
+/* ---------- Sprachausgabe auf Deutsch ----------
+   Die Stimme kommt vom Gerät. Gewählt wird die deutlichste deutsche Stimme (erweitert/Premium zuerst),
+   Spaß-Stimmen wie Eddy oder Grandpa werden gemieden. Stimme und Tempo lassen sich unter „Stimme & Tempo“ einstellen
+   und bleiben auf diesem Gerät. */
+const TTS_SPEED = {langsam:{f:.85, name:'Langsam'}, mittel:{f:1, name:'Mittel'}, zuegig:{f:1.15, name:'Zügig'}};
+store.tts = store.tts && typeof store.tts==='object' ? store.tts : {};
+const ttsSpeed = () => (TTS_SPEED[store.tts.speed]||TTS_SPEED.mittel).f;
+const NOVELTY = /\b(eddy|flo|grandma|grandpa|oma|opa|reed|rocko|sandy|shelley|albert|bahh|bells|boing|bubbles|cellos|jester|organ|superstar|trinoids|whisper|wobble|zarvox|good news|bad news)\b/i;
+let deVoiceCache=null, speechToken=0, speechUnlocked=false;
+function deVoices(){
+  try{ return speechSynthesis.getVoices().filter(v=>/^de([-_]|$)/i.test(v.lang)); }catch(e){ return []; }
+}
+function voiceScore(v){
+  return (/^de[-_]DE/i.test(v.lang)?4:0)+(/premium/i.test(v.name)?6:0)+(/enhanced|erweitert|verbessert|natural|neural/i.test(v.name)?5:0)
+    +(/anna|helena|petra|markus|martin|yannick|google/i.test(v.name)?2:0)+(v.localService?1:0)-(NOVELTY.test(v.name)?20:0);
+}
+const isGoodVoice = v => /premium|enhanced|erweitert|verbessert|natural|neural/i.test(v.name);
+function deVoice(){
+  if(deVoiceCache) return deVoiceCache;
+  const vs=deVoices(); if(!vs.length) return null;
+  const chosen=store.tts.voice && vs.find(v=>v.voiceURI===store.tts.voice||v.name===store.tts.voice);
+  deVoiceCache=chosen || vs.slice().sort((a,b)=>voiceScore(b)-voiceScore(a))[0]; return deVoiceCache;
+}
+if(canSpeak){ try{ speechSynthesis.addEventListener('voiceschanged', ()=>{ deVoiceCache=null; if(S.view==='voice') renderKeepScroll(); }); }catch(e){} }
+/* list: Texte, {t, r} mit eigener Geschwindigkeit oder Zahlen als Pause in ms */
+function speakDE(list, rate){
+  if(!canSpeak) return; const tok=++speechToken;
+  try{ speechSynthesis.cancel(); }catch(e){}
+  let i=0;
+  const next=()=>{
+    if(tok!==speechToken || i>=list.length) return;
+    const item=list[i++];
+    if(typeof item==='number'){ setTimeout(next,item); return; }
+    const text=typeof item==='string'?item:item.t, r=(typeof item==='string'?(rate||.85):item.r)*ttsSpeed();
+    try{
+      const u=new SpeechSynthesisUtterance(text); u.lang='de-DE'; const v=deVoice(); if(v){ u.voice=v; u.lang=v.lang; }
+      u.rate=Math.max(.5,Math.min(1.2,r)); u.pitch=1; u.volume=1;
+      let done=false; const fin=()=>{ if(done) return; done=true; next(); };
+      u.onstart=()=>{ speechUnlocked=true; }; u.onend=fin; u.onerror=fin; speechSynthesis.speak(u);
+    }catch(e){}
+  };
+  /* iOS verschluckt nach cancel() gern den Anfang. Nach dem ersten Vorlesen (Freigabe durch Antippen) kurz warten. */
+  if(speechUnlocked) setTimeout(next,180); else next();
+}
+function stopSpeech(){ speechToken++; if(canSpeak){ try{ speechSynthesis.cancel(); }catch(e){} } }
+function speakWord(it, slow){
+  const r=slow?.62:.8, w=it.first?lcFirst(it.w):it.w;
+  speakDE(it.s ? [{t:w,r}, 800, {t:it.s,r:slow?.68:.82}, 800, {t:w,r}] : [{t:w,r}, 1000, {t:w,r}]);
+}
+
+/* ---------- Prüfen ---------- */
+const cleanIn = s => (s||'').replace(/[’‘`´]/g,"'").replace(/\s+/g,' ').trim().replace(/[.!?]+$/,'').trim();
+function dCheck(input, it){
+  const a=cleanIn(input); if(!a) return false;
+  const ok=[it.w, it.core]; if(it.first) ok.push(lcFirst(it.w));
+  return ok.includes(a);
+}
+/* Buchstaben, die im Wort fehlen oder falsch sind, werden markiert (Vergleich per LCS) */
+function markWord(target, typed){
+  const a=[...target], b=[...(typed||'')], n=a.length, m=b.length;
+  const L=Array.from({length:n+1},()=>new Array(m+1).fill(0));
+  for(let i=n-1;i>=0;i--) for(let j=m-1;j>=0;j--) L[i][j]=a[i]===b[j]?L[i+1][j+1]+1:Math.max(L[i+1][j],L[i][j+1]);
+  const keep=new Array(n).fill(false); let i=0,j=0;
+  while(i<n&&j<m){ if(a[i]===b[j]){ keep[i]=true; i++; j++; } else if(L[i+1][j]>=L[i][j+1]) i++; else j++; }
+  return a.map((c,k)=>keep[k]||c===' '?esc(c):`<mark>${esc(c)}</mark>`).join('');
+}
+
+/* ---------- Lernwörter: Auswahl und Übung ---------- */
+const D_COUNTS=[10,15,20,30];
+function dSel(){ const k=dkid(); if(!S.dsel) S.dsel=new Set(k.dsel&&k.dsel.length?k.dsel:['fehler']); return S.dsel; }
+function dPool(){
+  const k=dkid(), sel=dSel(), seen=new Set(), pool=[];
+  const add=x=>{ if(x && !seen.has(x.key)){ seen.add(x.key); pool.push(x); } };
+  if(sel.has('mine')) dMine(k).forEach(add);
+  DWORDS.forEach(x=>{ if(sel.has(x.t)) add(x); });
+  return pool;
+}
+function dStart(pool, n){
+  const k=dkid(); if(!pool.length){ toast('Wähle zuerst einen Bereich aus.'); return false; }
+  n=Math.min(n||pool.length, pool.length);
+  S.ds={items:shuffle(dPick(pool,n,k)), i:0, res:[], verdict:null, spoken:-1};
+  return true;
+}
+function dGrade(right, typed){
+  const s=S.ds, it=s.items[s.i], k=dkid();
+  const p=k.d[it.key]||{b:0,due:0}; const b= right ? (p.b===0?2:Math.min(5,p.b+1)) : 1;
+  k.d[it.key]={b, due:startOfDay()+INTERVAL[b]*DAY};
+  k.xp=(k.xp||0)+(right?10:0); touchDay(k);
+  s.verdict={item:it, r:right?'right':'wrong', from:p.b, to:b, typed}; s.res.push(s.verdict); save();
+}
+function dSubmit(){
+  const s=S.ds, inp=document.getElementById('danswer'); if(!s) return;
+  if(s.verdict){ s.i++; s.verdict=null; if(s.i>=s.items.length){ inp.blur(); go('ddone'); } else render(); return; }
+  const val=inp.value; if(!val.trim()){ inp.focus(); return; }
+  stopSpeech(); dGrade(dCheck(val, s.items[s.i]), cleanIn(val)); render();
+}
+
+const EAR_ICON='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+const SNAIL='<span aria-hidden="true">🐌</span>';
+const noVoice = () => canSpeak ? '' : `<p class="small hint">Dieses Gerät kann leider nicht vorlesen. Öffne den Lernkasten in Safari auf dem iPhone oder iPad.</p>`;
+
+/* ---------- Fächer-Auswahl ---------- */
+function viewHub(){
+  const k=kidData(), info=kidInfo(); dkid(k);
+  const en=reviewCount(k), de=dReview(k);
+  const streak=(k.lastDay===today()||k.lastDay===yesterday())?(k.streak||0):0;
+  return header(`<button class="btn-link" data-act="back-pick">Wechseln</button>`)+
+  `<div class="stack-s"><h1>Hallo ${esc(info.name)}!</h1><p class="muted">Was übst du heute?</p></div>
+  <div class="subjects">
+    <button class="subject" data-act="to-en"><span class="ic">EN</span><span><strong>Englisch</strong><span class="sub">Vokabeln aus Green Line 1</span>${en?`<span class="due num">${plural(en,'Vokabel','Vokabeln')} zum Wiederholen</span>`:''}</span><span class="go" aria-hidden="true">›</span></button>
+    <button class="subject" data-act="to-de"><span class="ic">DE</span><span><strong>Deutsch</strong><span class="sub">Rechtschreibung: Lernwörter und Diktate</span>${de?`<span class="due num">${plural(de,'Wort','Wörter')} zum Wiederholen</span>`:''}</span><span class="go" aria-hidden="true">›</span></button>
+  </div>
+  <div class="stats">
+    <div class="stat"><b class="num">${streak}</b><span>${streak===1?'Tag':'Tage'} am Stück</span></div>
+    <div class="stat"><b class="num">${k.xp||0}</b><span>Punkte</span></div>
+    <div class="stat"><b class="num">${boxCounts(k)[5]+dCounts(k)[5]}</b><span>im Fach 5</span></div>
+  </div>
+  <div class="row" style="justify-content:center;gap:4px 18px"><button class="btn-link" data-act="edit-profile">Name oder Farbe ändern</button><button class="btn-link" data-act="backup">Lernstand sichern</button></div>`+footer();
+}
+
+/* ---------- Deutsch: Startseite ---------- */
+function viewDe(){
+  const k=dkid(), counts=dCounts(k), max=Math.max(1,...counts), review=dReview(k), mine=dMine(k).length;
+  const total=counts.reduce((a,b)=>a+b,0);
+  return header(`<button class="btn-link" data-act="hub">Fächer</button>`)+
+  `<div class="stack-s"><span class="label">Deutsch</span><h1>Rechtschreibung</h1>
+    <p class="muted">${review?`<span class="highlight num">${plural(review,'Wort','Wörter')}</span> ${review===1?'ist':'sind'} heute zum Wiederholen dran.`:'Ich lese dir vor, du schreibst. Hör genau hin!'}</p></div>
+  ${noVoice()}
+  <div class="choicecol">
+    <button class="btn btn-primary btn-wide choicebtn" data-act="to-dwords"><b>Lernwörter üben</b><span>Ich spreche dir Wörter vor, du schreibst sie auf</span></button>
+    <button class="btn btn-ghost btn-wide choicebtn" data-act="to-dict"><b>Diktat schreiben</b><span>5 oder 10 Sätze zum Mitschreiben</span></button>
+    ${mine?`<button class="btn btn-ghost btn-wide choicebtn" data-act="d-mine"><b>Meine Fehlerwörter üben</b><span>${plural(mine,'Wort','Wörter')}, die du zuletzt falsch geschrieben hast</span></button>`:''}
+  </div>
+  <section class="panel" aria-label="Karteikasten Deutsch">
+    <div class="top"><h3>Dein Karteikasten</h3><span class="small muted num">${total} Karten</span></div>
+    <div class="box">${counts.map((c,i)=>`<div class="fach ${i===0?'new':''}"><span class="n">${c}</span><div class="stack"><div class="fill" style="height:${Math.round(c/max*100)}%"></div></div><span class="t">${FACH_NAME[i]}</span></div>`).join('')}</div>
+    <p class="note">Richtig → ein Fach weiter. Falsch → zurück in Fach 1 und zu deinen Fehlerwörtern. Wörter aus dem Deutschbuch (Kapitel 13) und die 100 häufigsten Fehlerwörter.</p>
+  </section>
+  <button class="btn-link" data-act="to-voice" style="align-self:center">Stimme & Tempo einstellen</button>`+footer();
+}
+
+/* ---------- Deutsch: Bereiche wählen ---------- */
+function viewDWords(){
+  const k=dkid(), sel=dSel(), pool=dPool(), mine=dMine(k).length;
+  const counts=new Map(); DWORDS.forEach(x=>counts.set(x.t,(counts.get(x.t)||0)+1));
+  const total=pool.length; const n=Math.min(S.dn||k.dn||10, total||10);
+  const chips=D_COUNTS.filter(x=>x<total);
+  return header(`<button class="btn-link" data-act="to-de">Zurück</button>`)+
+  `<div class="stack-s"><h1>Was übst du?</h1><p class="muted">Tippe einen oder mehrere Bereiche an. Die Seitenzahlen beziehen sich auf dein Deutschbuch.</p></div>
+  <section class="panel"><div class="topiclist">
+    ${mine?`<button class="topic mine" aria-pressed="${sel.has('mine')}" data-act="d-topic" data-id="mine"><span><b>Meine Fehlerwörter</b><small>zuletzt falsch geschrieben</small></span><span class="cnt">${mine}</span></button>`:''}
+    ${DE.topics.map(t=>`<button class="topic" aria-pressed="${sel.has(t.id)}" data-act="d-topic" data-id="${esc(t.id)}"><span><b>${esc(t.name)}</b><small>${esc(t.src)}</small></span><span class="cnt">${counts.get(t.id)||0}</span></button>`).join('')}
+  </div></section>
+  <div class="sticky">
+    ${total?`<span class="label">Wie viele Wörter?</span>
+      <div class="chips">${chips.map(x=>`<button class="chip" aria-pressed="${n===x}" data-act="d-count" data-n="${x}">${x}</button>`).join('')}<button class="chip" aria-pressed="${n===total}" data-act="d-count" data-n="${total}">Alle ${total}</button></div>
+      <button class="btn btn-primary btn-wide" data-act="d-start">${plural(n,'Wort','Wörter')} üben</button>`
+    :'<p class="muted small">Noch kein Bereich ausgewählt.</p>'}
+  </div>`;
+}
+
+/* ---------- Deutsch: Wörter üben ---------- */
+function viewDPractice(){
+  return `<div class="progress"><button class="btn-link" data-act="d-quit">Beenden</button><div class="bar" role="progressbar"><i id="pbar"></i></div><span class="small muted num" id="pcount"></span></div>
+  <div class="card" id="card"></div>
+  <form class="answerbox" data-form="dtype"><input id="danswer" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" lang="de" enterkeyhint="go" aria-label="Schreibe das Wort"><button class="btn btn-primary" type="submit" id="go">Prüfen</button></form>`;
+}
+function updateDPractice(){
+  const s=S.ds, it=s.items[s.i], v=s.verdict, k=dkid();
+  document.getElementById('pbar').style.width=Math.round(s.i/s.items.length*100)+'%';
+  document.getElementById('pcount').textContent=(s.i+1)+' / '+s.items.length;
+  const fach=v?v.to:dBox(k,it.key).b, topic=it.t==='mine'?'Aus deinem Diktat':(DTOPIC.get(it.t)||{}).name||'';
+  const target = v && v.typed && !PREFIX.test(v.typed) && it.core!==it.w ? it.core : it.w;
+  document.getElementById('card').innerHTML=
+   `<div class="head"><span class="label">${esc(topic)}</span><span class="fachtag">${FACH_NAME[fach]}</span></div>
+    ${v?`<div class="wordline"><div class="answer">${v.r==='right'?esc(it.w):markWord(target, v.typed)}</div><button type="button" class="speak" data-act="d-say" data-keepfocus aria-label="Nochmal anhören">${EAR_ICON}</button></div>
+      ${it.s?`<p class="ctx">${esc(it.s)}</p>`:''}
+      ${v.r==='right'?`<div class="verdict right">Richtig!${v.to>v.from&&v.from>=1?` Ab ins ${FACH_NAME[v.to]}.`:''}</div>`
+        :`<div class="verdict wrong">Leider nicht. Du hast <s>${esc(v.typed)}</s> geschrieben.</div>
+          <p class="tip">${esc(it.t==='mine'?'Schau dir die markierten Buchstaben genau an und schreib das Wort zweimal ins Heft.':(DTOPIC.get(it.t)||{}).hint||'')}</p>`}`
+    :`<div class="listen"><button type="button" class="btn btn-primary" data-act="d-say" data-keepfocus>${EAR_ICON} Anhören</button><button type="button" class="btn btn-ghost" data-act="d-slow" data-keepfocus>${SNAIL} Langsam</button></div>
+      <p class="note">Hör zu und schreib das Wort. Achte auf Groß- und Kleinschreibung.${it.first?' Am Satzanfang darfst du klein schreiben.':''}</p>`}`;
+  const inp=document.getElementById('danswer'), btn=document.getElementById('go');
+  inp.value=''; inp.placeholder=v?'Weiter mit Return …':'Schreibe das Wort …';
+  inp.setAttribute('enterkeyhint', v?'next':'go'); btn.textContent=v?'Weiter':'Prüfen';
+  inp.focus({preventScroll:true});
+  if(!v && s.spoken!==s.i){ s.spoken=s.i; speakWord(it); }
+}
+function viewDDone(){
+  const s=S.ds; const r1=s.res.filter(x=>x.r==='right').length, r3=s.res.length-r1, miss=s.res.filter(x=>x.r!=='right');
+  const msg=!r3?'Alles richtig. Super gemacht!':r1>=s.res.length/2?'Gut gemacht! Die Fehlerwörter üben wir gleich nochmal.':'Dranbleiben lohnt sich. Morgen sitzt es schon besser.';
+  return header()+`<div class="stack-s"><h1>Geschafft!</h1><p class="muted">${msg} <span class="highlight num">+${r1*10} Punkte</span></p></div>
+  <div class="result"><div class="r1"><b>${r1}</b>richtig</div><div class="r3"><b>${r3}</b>falsch</div></div>
+  ${miss.length?`<section class="panel"><h3>Diese Wörter üben wir nochmal</h3><ul class="wlist">${miss.map(x=>`<li><span class="en">${esc(x.item.w)}</span><span class="de"><s>${esc(x.typed)}</s></span></li>`).join('')}</ul></section>`:''}
+  <div class="row">${miss.length?`<button class="btn btn-primary" data-act="d-retry">Fehler nochmal üben</button>`:''}<button class="btn btn-ghost" data-act="to-de">Zurück</button></div>`;
+}
+
+/* ---------- Diktat ---------- */
+function splitParts(sentence){
+  const segs=sentence.split(', ').map((x,i,a)=>i<a.length-1?x+',':x), parts=[];
+  for(const seg of segs){
+    const w=seg.split(' ');
+    if(w.length<=5){ parts.push(seg); continue; }
+    const n=Math.ceil(w.length/4), size=Math.ceil(w.length/n);
+    for(let i=0;i<w.length;i+=size) parts.push(w.slice(i,i+size).join(' '));
+  }
+  return parts;
+}
+function speakSentence(mode, idx){
+  const s=S.dc; if(!s) return; const sent=s.sents[s.i], parts=splitParts(sent);
+  if(mode==='part'){ speakDE([{t:parts[idx],r:.7}]); return; }
+  if(mode==='full'){ speakDE([{t:sent,r:.8}]); return; }
+  const seq=[]; parts.forEach((p,i)=>{ if(i) seq.push(1400+450*p.split(' ').length); seq.push({t:p,r:.7}); });
+  if(mode==='slow'){ speakDE(seq); return; }
+  speakDE([{t:sent,r:.8}, 1500, ...seq]);       // auto: erst der ganze Satz, dann in Teilen
+}
+function pickDict(n){
+  const k=dkid(), now=Date.now(), texts=DE.texts.filter(t=>!S.dtext||t.id===S.dtext);
+  const cand=[];
+  for(const t of texts){
+    if(n===10) cand.push({t, half:'ab', last:Math.max(k.dt[t.id+':a']||0, k.dt[t.id+':b']||0)});
+    else ['a','b'].forEach(h=>cand.push({t, half:h, last:k.dt[t.id+':'+h]||0}));
+  }
+  const min=Math.min(...cand.map(c=>c.last)); const best=cand.filter(c=>c.last===min);
+  const c=best[Math.floor(Math.random()*best.length)];
+  const sents=c.half==='ab'?c.t.a.concat(c.t.b):c.t[c.half];
+  S.dc={text:c.t, half:c.half, sents, i:0, res:[], verdict:null, spoken:-1, started:now};
+}
+const TOK=/[A-Za-zÄÖÜäöüßÀ-ÿ]+(?:-[A-Za-zÄÖÜäöüßÀ-ÿ]+)*|\d+|[.,!?;:]/g;
+const toks = s => (String(s||'').replace(/[„“"«»]/g,'').match(TOK)||[]);
+const isWordTok = t => !/^[.,!?;:]$/.test(t);
+function alignTokens(E, T){
+  const n=E.length, m=T.length, D=Array.from({length:n+1},()=>new Array(m+1).fill(0));
+  const subCost=(a,b)=>a===b?0:(isWordTok(a)===isWordTok(b)?1:3);
+  for(let i=0;i<=n;i++) D[i][0]=i; for(let j=0;j<=m;j++) D[0][j]=j;
+  for(let i=1;i<=n;i++) for(let j=1;j<=m;j++) D[i][j]=Math.min(D[i-1][j-1]+subCost(E[i-1],T[j-1]), D[i-1][j]+1, D[i][j-1]+1);
+  const ops=[]; let i=n, j=m;
+  while(i>0||j>0){
+    if(i>0&&j>0&&D[i][j]===D[i-1][j-1]+subCost(E[i-1],T[j-1])){ ops.push({op:E[i-1]===T[j-1]?'eq':'sub', e:i-1, t:j-1}); i--; j--; }
+    else if(i>0&&D[i][j]===D[i-1][j]+1){ ops.push({op:'del', e:i-1}); i--; }
+    else { ops.push({op:'ins', t:j-1}); j--; }
+  }
+  return ops.reverse();
+}
+function gradeSentence(expected, typed){
+  const E=toks(expected), T=toks(typed), ops=alignTokens(E,T);
+  const eCls=new Array(E.length).fill(''), tCls=new Array(T.length).fill(''); const errWords=[]; let words=0, punct=0, caseOnly=0;
+  for(const o of ops){
+    if(o.op==='eq') continue;
+    /* Ein Komma vor „und“/„oder“ zwischen zwei Hauptsätzen ist freigestellt und zählt nicht als Fehler */
+    if(o.op==='ins' && T[o.t]===',' && /^(und|oder)$/.test(T[o.t+1]||'')) continue;
+    const et=o.e!=null?E[o.e]:null, tt=o.t!=null?T[o.t]:null;
+    const isW = et!=null ? isWordTok(et) : isWordTok(tt);
+    if(isW){ words++; if(o.e!=null){ eCls[o.e]='bad'; errWords.push({w:et, first:o.e===0}); } if(o.t!=null) tCls[o.t]='bad';
+      if(et&&tt&&et.toLowerCase()===tt.toLowerCase()) caseOnly++; }
+    else { punct++; if(o.e!=null) eCls[o.e]='pun'; if(o.t!=null) tCls[o.t]='pun'; }
+  }
+  return {E, T, eCls, tCls, words, punct, caseOnly, errWords};
+}
+function joinToks(arr, cls){
+  return arr.map((t,i)=>{ const sp=i&&isWordTok(t)?' ':''; const c=cls[i]; return sp+(c?`<span class="${c}">${esc(t)}</span>`:esc(t)); }).join('');
+}
+function noteErrorWords(errWords, sentence){
+  const k=dkid();
+  for(const {w, first} of errWords){
+    const hit=CORE.get(w) || (first?CORE.get(lcFirst(w)):null);
+    if(hit){ k.d[hit.key]={b:1, due:0}; continue; }
+    if(!k.dx[w]) k.dx[w]={s:sentence, f:first};
+    k.d['x:'+w]={b:1, due:0};
+  }
+}
+function dictSubmit(){
+  const s=S.dc, inp=document.getElementById('dcin'); if(!s) return;
+  if(s.verdict){ s.i++; s.verdict=null; if(s.i>=s.sents.length){ inp.blur(); finishDict(); go('dictdone'); } else render(); return; }
+  const val=inp.value.replace(/\s+/g,' ').trim(); if(!val){ inp.focus(); return; }
+  stopSpeech();
+  const g=gradeSentence(s.sents[s.i], val), k=dkid();
+  noteErrorWords(g.errWords, s.sents[s.i]);
+  k.xp=(k.xp||0)+(g.words?0:(g.punct?5:10)); touchDay(k);
+  s.verdict={g, typed:val}; s.res.push({sent:s.sents[s.i], typed:val, g}); save(); render();
+}
+function finishDict(){
+  const s=S.dc, k=dkid(), now=Date.now();
+  if(s.half==='ab'){ k.dt[s.text.id+':a']=now; k.dt[s.text.id+':b']=now; } else k.dt[s.text.id+':'+s.half]=now;
+  saveNow();
+}
+function viewDictPick(){
+  const k=dkid();
+  const done=t=>(k.dt[t.id+':a']?1:0)+(k.dt[t.id+':b']?1:0);
+  return header(`<button class="btn-link" data-act="to-de">Zurück</button>`)+
+  `<div class="stack-s"><h1>Diktat schreiben</h1><p class="muted">Ich lese dir jeden Satz erst ganz und dann in kleinen Teilen vor. Du schreibst mit. Achte auf Groß- und Kleinschreibung und auf die Satzzeichen.</p></div>
+  ${noVoice()}
+  <section class="panel"><span class="label">Thema</span>
+    <div class="chips" style="justify-content:flex-start">
+      <button class="chip" aria-pressed="${!S.dtext}" data-act="d-text" data-id="">Überrasch mich</button>
+      ${DE.texts.map(t=>`<button class="chip" aria-pressed="${S.dtext===t.id}" data-act="d-text" data-id="${esc(t.id)}">${esc(t.title)}${done(t)===2?' ✓':''}</button>`).join('')}
+    </div>
+    <p class="note">✓ = schon ganz geschrieben. Bei „Überrasch mich“ kommt zuerst ein Diktat, das du noch nicht hattest.</p>
+  </section>
+  <div class="choicecol">
+    <button class="btn btn-primary btn-wide choicebtn" data-act="dict-start" data-n="5"><b>5 Sätze</b><span>kurzes Diktat</span></button>
+    <button class="btn btn-ghost btn-wide choicebtn" data-act="dict-start" data-n="10"><b>10 Sätze</b><span>langes Diktat</span></button>
+  </div>
+  <button class="btn-link" data-act="to-voice" style="align-self:center">Stimme undeutlich? Stimme & Tempo einstellen</button>`;
+}
+function viewDict(){
+  return `<div class="progress"><button class="btn-link" data-act="dict-quit">Beenden</button><div class="bar" role="progressbar"><i id="pbar"></i></div><span class="small muted num" id="pcount"></span></div>
+  <div class="card" id="card"></div>
+  <form class="dictbox" data-form="dict"><textarea id="dcin" rows="3" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" lang="de" enterkeyhint="go" aria-label="Schreibe den Satz"></textarea>
+  <button class="btn btn-primary btn-wide" type="submit" id="go">Prüfen</button></form>`;
+}
+function updateDict(){
+  const s=S.dc, v=s.verdict, sent=s.sents[s.i], parts=splitParts(sent);
+  document.getElementById('pbar').style.width=Math.round(s.i/s.sents.length*100)+'%';
+  document.getElementById('pcount').textContent=(s.i+1)+' / '+s.sents.length;
+  let body;
+  if(v){
+    const g=v.g, ok=!g.words&&!g.punct;
+    const msg= ok ? 'Fehlerfrei! Super.' : !g.words ? `Die Wörter stimmen! Nur ${g.punct===1?'ein Satzzeichen fehlt oder ist falsch':g.punct+' Satzzeichen fehlen oder sind falsch'}.` :
+      `${plural(g.words,'Fehler','Fehler')}${g.caseOnly?` (davon ${g.caseOnly}× Groß- und Kleinschreibung)`:''}${g.punct?` und ${g.punct===1?'ein Satzzeichen':g.punct+' Satzzeichen'}`:''}.`;
+    body=`<div class="sentlabel">So ist es richtig</div><div class="sent">${joinToks(g.E,g.eCls)}</div>
+      ${ok?'':`<div class="sentlabel">Das hast du geschrieben</div><div class="sent">${joinToks(g.T,g.tCls)||'–'}</div>`}
+      <div class="verdict ${ok?'right':!g.words?'half':'wrong'}">${esc(msg)}</div>
+      ${g.words?`<p class="note">Die falschen Wörter kommen zu deinen Fehlerwörtern.</p>`:''}`;
+  } else {
+    body=`<div class="listen"><button type="button" class="btn btn-primary" data-act="dict-say" data-mode="full" data-keepfocus>${EAR_ICON} Ganzer Satz</button><button type="button" class="btn btn-ghost" data-act="dict-say" data-mode="slow" data-keepfocus>${SNAIL} In Teilen</button></div>
+      <div class="parts"><span class="small muted">Teil nochmal:</span>${parts.map((p,i)=>`<button type="button" class="chip" data-act="dict-say" data-mode="part" data-i="${i}" data-keepfocus>${i+1}</button>`).join('')}</div>
+      <p class="note">Schreib den ganzen Satz mit Punkt. Mit Return prüfst du.</p>`;
+  }
+  document.getElementById('card').innerHTML=`<div class="head"><span class="label">${esc(s.text.title)} · Satz ${s.i+1} von ${s.sents.length}</span></div>${body}`;
+  const inp=document.getElementById('dcin'), btn=document.getElementById('go');
+  inp.value=''; inp.placeholder=v?'Weiter mit Return …':'Schreibe den Satz …';
+  inp.setAttribute('enterkeyhint', v?'next':'go'); btn.textContent=v?(s.i+1>=s.sents.length?'Ergebnis':'Nächster Satz'):'Prüfen';
+  inp.focus({preventScroll:true});
+  if(!v && s.spoken!==s.i){ s.spoken=s.i; speakSentence('auto'); }
+}
+function viewDictDone(){
+  const s=S.dc, n=s.res.length, perfect=s.res.filter(r=>!r.g.words&&!r.g.punct).length;
+  const words=s.res.reduce((a,r)=>a+r.g.words,0), punct=s.res.reduce((a,r)=>a+r.g.punct,0);
+  const pts=s.res.reduce((a,r)=>a+(r.g.words?0:(r.g.punct?5:10)),0);
+  const msg=!words&&!punct?'Ein fehlerfreies Diktat. Klasse!':words<=n/2?'Gut gemacht! Schau dir die markierten Stellen nochmal an.':'Weiter üben lohnt sich. Die Fehlerwörter helfen dir dabei.';
+  return header()+`<div class="stack-s"><h1>Diktat geschafft!</h1><p class="muted">${esc(s.text.title)} · ${msg} <span class="highlight num">+${pts} Punkte</span></p></div>
+  <div class="result"><div class="r1"><b>${perfect}</b>von ${n} Sätzen fehlerfrei</div><div class="r3"><b>${words}</b>${words===1?'Wortfehler':'Wortfehler'}${punct?` · ${punct} Satzzeichen`:''}</div></div>
+  ${s.res.some(r=>r.g.words||r.g.punct)?`<section class="panel"><h3>Deine Fehler</h3><ul class="dlist">${s.res.filter(r=>r.g.words||r.g.punct).map(r=>`<li><div class="sent">${joinToks(r.g.E,r.g.eCls)}</div><div class="small muted">Du: ${esc(r.typed)}</div></li>`).join('')}</ul></section>`:''}
+  <div class="row">${words?`<button class="btn btn-primary" data-act="d-mine">Fehlerwörter üben</button>`:''}<button class="btn btn-ghost" data-act="to-dict">Neues Diktat</button><button class="btn btn-ghost" data-act="to-de">Zurück</button></div>`;
+}
+
+/* ---------- Stimme & Tempo ---------- */
+const VOICE_TEST='Hallo! So klinge ich, wenn ich dir ein Diktat vorlese. Die Straße ist nass, weil es geregnet hat.';
+function viewVoice(){
+  const vs=deVoices().sort((a,b)=>voiceScore(b)-voiceScore(a)), cur=deVoice(), good=vs.some(isGoodVoice);
+  const sp=store.tts.speed||'mittel';
+  return header(`<button class="btn-link" data-act="to-de">Zurück</button>`)+
+  `<div class="stack-s"><h1>Stimme & Tempo</h1><p class="muted">Tippe eine Stimme an, um sie probezuhören. Nimm die, die du am besten verstehst. Die Einstellung gilt für dieses Gerät.</p></div>
+  ${noVoice()}
+  <section class="panel"><span class="label">Tempo</span>
+    <div class="chips" style="justify-content:flex-start">${Object.entries(TTS_SPEED).map(([k,v])=>`<button class="chip" aria-pressed="${sp===k}" data-act="v-speed" data-id="${k}">${v.name}</button>`).join('')}</div>
+  </section>
+  <section class="panel"><span class="label">Deutsche Stimmen auf diesem Gerät</span>
+    ${vs.length?`<div class="topiclist">${vs.map(v=>`<button class="topic" aria-pressed="${!!cur&&cur.voiceURI===v.voiceURI}" data-act="v-pick" data-id="${esc(v.voiceURI)}"><span><b>${esc(v.name)}</b><small>${isGoodVoice(v)?'besonders deutlich':NOVELTY.test(v.name)?'Spaß-Stimme, eher undeutlich':'Standard'}</small></span><span class="cnt" aria-hidden="true">▶</span></button>`).join('')}</div>`
+      :'<p class="small muted">Keine deutsche Stimme gefunden.</p>'}
+    <button class="btn btn-ghost btn-wide" data-act="v-test">${EAR_ICON} Probehören</button>
+  </section>
+  <section class="panel"><h3>${good?'Noch deutlicher':'Deutlichere Stimme laden'}</h3>
+    <p class="small">Auf dem iPhone oder iPad gibt es kostenlose, viel deutlichere Stimmen zum Herunterladen:</p>
+    <p class="small"><b>Einstellungen → Bedienungshilfen → Gesprochene Inhalte → Stimmen → Deutsch</b>. Dort eine Stimme mit dem Zusatz <b>„Erweitert“</b> oder <b>„Premium“</b> laden, zum Beispiel Anna. Danach den Lernkasten neu öffnen und die Stimme hier auswählen.</p>
+  </section>`;
+}
+
+/* ---------- Bedienung Deutsch ---------- */
+function deAction(act, el){
+  const k=kidData() && dkid();
+  switch(act){
+    case 'to-en': go('home'); break;
+    case 'to-de': go('de'); break;
+    case 'to-dwords': S.dsel=null; go('dwords'); break;
+    case 'to-dict': go('dictpick'); break;
+    case 'to-voice': go('voice'); break;
+    case 'v-speed': store.tts.speed=el.dataset.id; saveNow(); renderKeepScroll(); speakDE([VOICE_TEST]); break;
+    case 'v-pick': store.tts.voice=el.dataset.id; deVoiceCache=null; saveNow(); renderKeepScroll(); speakDE([VOICE_TEST]); break;
+    case 'v-test': speakDE([VOICE_TEST]); break;
+    case 'd-topic': { const sel=dSel(), id=el.dataset.id; sel.has(id)?sel.delete(id):sel.add(id); k.dsel=[...sel].filter(x=>x!=='mine'); save(); renderKeepScroll(); break; }
+    case 'd-count': S.dn=+el.dataset.n; k.dn=S.dn; save(); renderKeepScroll(); break;
+    case 'd-start': { const pool=dPool(); if(dStart(pool, Math.min(S.dn||k.dn||10, pool.length))) go('dpractice'); break; }
+    case 'd-mine': { const pool=dMine(k); if(!pool.length){ toast('Du hast gerade keine Fehlerwörter.'); break; } if(dStart(pool, Math.min(20,pool.length))) go('dpractice'); break; }
+    case 'd-say': { const s=S.ds; if(s) speakWord(s.items[s.i]); break; }
+    case 'd-slow': { const s=S.ds; if(s) speakWord(s.items[s.i], true); break; }
+    case 'd-quit': go(S.ds && S.ds.res.length ? 'ddone' : 'de'); break;
+    case 'd-retry': { const wrong=S.ds.res.filter(r=>r.r!=='right').map(r=>r.item); S.ds={items:shuffle(wrong), i:0, res:[], verdict:null, spoken:-1}; go('dpractice'); break; }
+    case 'd-text': S.dtext=el.dataset.id||null; renderKeepScroll(); break;
+    case 'dict-start': pickDict(+el.dataset.n); go('dict'); break;
+    case 'dict-say': speakSentence(el.dataset.mode, +el.dataset.i||0); break;
+    case 'dict-quit': if(S.dc && S.dc.res.length){ finishDict(); go('dictdone'); } else go('dictpick'); break;
+  }
+}
+/* Return im Diktat-Feld prüft den Satz (statt eine neue Zeile zu beginnen) */
+document.addEventListener('keydown', ev=>{
+  if(ev.target && ev.target.id==='dcin' && ev.key==='Enter' && !ev.shiftKey && !ev.isComposing){ ev.preventDefault(); dictSubmit(); }
+});
+
 function render(){
   if(S.kidId && !kidInfo()){ S.kidId=null; S.view='pick'; }
   const info=kidInfo();
   app.className='app acc-'+((S.view==='profile'||(S.view==='pick'&&!store.profiles.length))&&S.form ? S.form.color : colorOf(info));
   if(S.view==='practice' && app.dataset.view==='practice'){ updatePractice(); return; }
+  if(S.view==='dpractice' && app.dataset.view==='dpractice'){ updateDPractice(); return; }
+  if(S.view==='dict' && app.dataset.view==='dict'){ updateDict(); return; }
   app.dataset.view=S.view;
-  app.innerHTML = S.view==='home'?viewHome() : S.view==='pages'?viewPages() : S.view==='count'?viewCount() : S.view==='boxes'?viewBoxes() : S.view==='practice'?viewPractice() : S.view==='done'?viewDone() : S.view==='profile'?viewProfileForm(false) : S.view==='backup'?viewBackup() : viewPick();
+  app.innerHTML = S.view==='hub'?viewHub() : S.view==='voice'?viewVoice() : S.view==='de'?viewDe() : S.view==='dwords'?viewDWords() : S.view==='dpractice'?viewDPractice() : S.view==='ddone'?viewDDone() : S.view==='dictpick'?viewDictPick() : S.view==='dict'?viewDict() : S.view==='dictdone'?viewDictDone() : S.view==='home'?viewHome() : S.view==='pages'?viewPages() : S.view==='count'?viewCount() : S.view==='boxes'?viewBoxes() : S.view==='practice'?viewPractice() : S.view==='done'?viewDone() : S.view==='profile'?viewProfileForm(false) : S.view==='backup'?viewBackup() : viewPick();
   if(S.view==='practice') updatePractice();
+  if(S.view==='dpractice') updateDPractice();
+  if(S.view==='dict') updateDict();
 }
 function renderKeepScroll(){ const y=window.scrollY; render(); window.scrollTo(0,y); }
-function go(view){ document.getElementById('toast').hidden=true; S.view=view; render(); window.scrollTo(0,0); }
+function go(view){ document.getElementById('toast').hidden=true; if(view!=='dpractice'&&view!=='dict') stopSpeech(); S.view=view; render(); window.scrollTo(0,0); }
 
 /* ---------- Bedienung ---------- */
 document.addEventListener('mousedown', ev=>{ if(ev.target.closest('[data-keepfocus]')) ev.preventDefault(); });
@@ -616,7 +1103,8 @@ document.addEventListener('click', ev=>{
   const el=ev.target.closest('[data-act]'); if(!el) return;
   const act=el.dataset.act, id=el.dataset.id;
   switch(act){
-    case 'pick': openKid(id); go('home'); break;
+    case 'pick': openKid(id); go('hub'); break;
+    case 'hub': go(S.kidId?'hub':'pick'); break;
     case 'back-pick': S.kidId=null; go('pick'); break;
     case 'home': go(S.kidId?'home':'pick'); break;
     case 'choose-pages': go('pages'); break;
@@ -646,7 +1134,8 @@ document.addEventListener('click', ev=>{
     case 'import-no': S.importing=null; renderKeepScroll(); break;
     case 'import-yes': { const n=S.importing.profiles.length; applyBackup(S.importing); S.importing=null;
       if(S.kidId && !profileOf(S.kidId)) S.kidId=null;
-      toast(n===1?'Lernstand übernommen':`${n} Profile übernommen`); go(S.kidId?'home':'pick'); break; }
+      toast(n===1?'Lernstand übernommen':`${n} Profile übernommen`); go(S.kidId?'hub':'pick'); break; }
+    default: deAction(act, el); break;
     case 'del-yes': { const id=S.form.id; store.profiles=store.profiles.filter(p=>p.id!==id); delete store.kids[id]; delete store.pages[id];
       if(store.last===id) store.last=null; saveNow(); S.kidId=null; S.form=null; S.confirmDel=false; toast('Profil gelöscht'); go('pick'); break; }
   }
@@ -668,8 +1157,8 @@ document.addEventListener('submit', ev=>{
     const name=(S.form.name||'').trim().replace(/\s+/g,' ');
     if(!name){ toast('Bitte gib deinen Namen ein.'); document.getElementById('pname').focus(); return; }
     document.activeElement && document.activeElement.blur();
-    if(S.form.id){ const p=profileOf(S.form.id); p.name=name; p.color=S.form.color; saveNow(); S.form=null; toast('Gespeichert'); go('home'); }
-    else { const id=createProfile(name, S.form.color); S.form=null; openKid(id); go('home'); }
+    if(S.form.id){ const p=profileOf(S.form.id); p.name=name; p.color=S.form.color; saveNow(); S.form=null; toast('Gespeichert'); go('hub'); }
+    else { const id=createProfile(name, S.form.color); S.form=null; openKid(id); go('hub'); }
     return;
   }
   if(f==='type'){
@@ -678,6 +1167,8 @@ document.addEventListener('submit', ev=>{
     const val=inp.value; if(!val.trim()){ inp.focus(); return; }
     grade(checkAnswer(val,s.items[s.i].w), val.trim()); render();
   }
+  if(f==='dtype'){ dSubmit(); return; }
+  if(f==='dict'){ dictSubmit(); return; }
   if(f==='range'){ const a=parseInt(S.from,10), b=parseInt(S.to||S.from,10);
     if(!a){ toast('Gib eine Seitenzahl ein, z. B. 189 bis 195.'); return; }
     document.activeElement && document.activeElement.blur();

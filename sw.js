@@ -1,8 +1,8 @@
-/* Offline-Speicher für den Vokabelkasten.
+/* Offline-Speicher für den Lernkasten.
    Bei jeder neuen Version VERSION hochzählen, dann holen sich die Geräte die neuen Dateien. */
-const VERSION = 'vokabelkasten-v6';
+const VERSION = 'lernkasten-v9';
 const FILES = [
-  './', './index.html', './vocab.js', './manifest.webmanifest',
+  './', './index.html', './vocab.js', './deutsch.js', './manifest.webmanifest',
   './icons/apple-touch-icon.png', './icons/icon-192.png', './icons/icon-512.png',
   './icons/icon-maskable-512.png', './icons/favicon.png'
 ];
