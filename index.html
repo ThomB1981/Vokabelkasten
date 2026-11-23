@@ -880,7 +880,10 @@ function viewDDone(){
 
 /* ---------- Diktat ---------- */
 function splitParts(sentence){
-  const segs=sentence.split(', ').map((x,i,a)=>i<a.length-1?x+',':x), parts=[];
+  /* Teile enden an Komma oder Doppelpunkt, lange Stücke werden in Gruppen von 3–4 Wörtern geteilt */
+  const segs=[], parts=[]; let cur=[];
+  for(const w of sentence.split(' ')){ cur.push(w); if(/[,:]$/.test(w)){ segs.push(cur.join(' ')); cur=[]; } }
+  if(cur.length) segs.push(cur.join(' '));
   for(const seg of segs){
     const w=seg.split(' ');
     if(w.length<=5){ parts.push(seg); continue; }
@@ -895,10 +898,14 @@ function speakSentence(mode, idx){
   if(mode==='full'){ speakDE([{t:sent,r:.8}]); return; }
   const seq=[]; parts.forEach((p,i)=>{ if(i) seq.push(1400+450*p.split(' ').length); seq.push({t:p,r:.7}); });
   if(mode==='slow'){ speakDE(seq); return; }
-  speakDE([{t:sent,r:.8}, 1500, ...seq]);       // auto: erst der ganze Satz, dann in Teilen
+  const pre = hasSpeech(sent) ? [{t:'Achtung, in diesem Satz gibt es wörtliche Rede.', r:.85}, 900] : [];
+  speakDE([...pre, {t:sent,r:.8}, 1500, ...seq]);       // auto: ggf. Hinweis, dann der ganze Satz, dann in Teilen
 }
+const levelOf = t => t.level||'normal';
+const hasSpeech = s => /[„“"]/.test(s);
+function dLevel(){ const k=dkid(); if(!S.dlevel) S.dlevel=k.dlevel||'normal'; return S.dlevel; }
 function pickDict(n){
-  const k=dkid(), now=Date.now(), texts=DE.texts.filter(t=>!S.dtext||t.id===S.dtext);
+  const k=dkid(), now=Date.now(), lv=dLevel(), texts=DE.texts.filter(t=>levelOf(t)===lv && (!S.dtext||t.id===S.dtext));
   const cand=[];
   for(const t of texts){
     if(n===10) cand.push({t, half:'ab', last:Math.max(k.dt[t.id+':a']||0, k.dt[t.id+':b']||0)});
@@ -909,17 +916,19 @@ function pickDict(n){
   const sents=c.half==='ab'?c.t.a.concat(c.t.b):c.t[c.half];
   S.dc={text:c.t, half:c.half, sents, i:0, res:[], verdict:null, spoken:-1, started:now};
 }
-const TOK=/[A-Za-zÄÖÜäöüßÀ-ÿ]+(?:-[A-Za-zÄÖÜäöüßÀ-ÿ]+)*|\d+|[.,!?;:]/g;
-const toks = s => (String(s||'').replace(/[„“"«»]/g,'').match(TOK)||[]);
-const isWordTok = t => !/^[.,!?;:]$/.test(t);
+const TOK=/[A-Za-zÄÖÜäöüßÀ-ÿ]+(?:-[A-Za-zÄÖÜäöüßÀ-ÿ]+)*|\d+|[.,!?;:„“”"«»]/g;
+const toks = s => (String(s||'').match(TOK)||[]);
+const isQuote = t => /^[„“”"«»]$/.test(t);
+const isWordTok = t => !/^[.,!?;:]$/.test(t) && !isQuote(t);
+const tokNorm = t => isQuote(t) ? '"' : t;      // „ “ ” und " gelten als gleich
 function alignTokens(E, T){
   const n=E.length, m=T.length, D=Array.from({length:n+1},()=>new Array(m+1).fill(0));
-  const subCost=(a,b)=>a===b?0:(isWordTok(a)===isWordTok(b)?1:3);
+  const subCost=(a,b)=>tokNorm(a)===tokNorm(b)?0:(isWordTok(a)===isWordTok(b)?1:3);
   for(let i=0;i<=n;i++) D[i][0]=i; for(let j=0;j<=m;j++) D[0][j]=j;
   for(let i=1;i<=n;i++) for(let j=1;j<=m;j++) D[i][j]=Math.min(D[i-1][j-1]+subCost(E[i-1],T[j-1]), D[i-1][j]+1, D[i][j-1]+1);
   const ops=[]; let i=n, j=m;
   while(i>0||j>0){
-    if(i>0&&j>0&&D[i][j]===D[i-1][j-1]+subCost(E[i-1],T[j-1])){ ops.push({op:E[i-1]===T[j-1]?'eq':'sub', e:i-1, t:j-1}); i--; j--; }
+    if(i>0&&j>0&&D[i][j]===D[i-1][j-1]+subCost(E[i-1],T[j-1])){ ops.push({op:tokNorm(E[i-1])===tokNorm(T[j-1])?'eq':'sub', e:i-1, t:j-1}); i--; j--; }
     else if(i>0&&D[i][j]===D[i-1][j]+1){ ops.push({op:'del', e:i-1}); i--; }
     else { ops.push({op:'ins', t:j-1}); j--; }
   }
@@ -934,14 +943,22 @@ function gradeSentence(expected, typed){
     if(o.op==='ins' && T[o.t]===',' && /^(und|oder)$/.test(T[o.t+1]||'')) continue;
     const et=o.e!=null?E[o.e]:null, tt=o.t!=null?T[o.t]:null;
     const isW = et!=null ? isWordTok(et) : isWordTok(tt);
-    if(isW){ words++; if(o.e!=null){ eCls[o.e]='bad'; errWords.push({w:et, first:o.e===0}); } if(o.t!=null) tCls[o.t]='bad';
+    if(isW){ words++; if(o.e!=null){ eCls[o.e]='bad'; errWords.push({w:et, first:o.e===0||isQuote(E[o.e-1]||'')}); } if(o.t!=null) tCls[o.t]='bad';
       if(et&&tt&&et.toLowerCase()===tt.toLowerCase()) caseOnly++; }
     else { punct++; if(o.e!=null) eCls[o.e]='pun'; if(o.t!=null) tCls[o.t]='pun'; }
   }
   return {E, T, eCls, tCls, words, punct, caseOnly, errWords};
 }
 function joinToks(arr, cls){
-  return arr.map((t,i)=>{ const sp=i&&isWordTok(t)?' ':''; const c=cls[i]; return sp+(c?`<span class="${c}">${esc(t)}</span>`:esc(t)); }).join('');
+  let open=false, prevOpen=false, out='';
+  arr.forEach((t,i)=>{
+    const q=isQuote(t); let opening=false;
+    if(q){ opening = t==='„'||t==='«' ? true : (t==='“'||t==='”'||t==='»') ? false : !open; open=opening; }
+    const sp = !i||prevOpen ? '' : (isWordTok(t) || (q&&opening)) ? ' ' : '';
+    out += sp + (cls[i]?`<span class="${cls[i]}">${esc(t)}</span>`:esc(t));
+    prevOpen = q&&opening;
+  });
+  return out;
 }
 function noteErrorWords(errWords, sentence){
   const k=dkid();
@@ -969,14 +986,22 @@ function finishDict(){
 }
 function viewDictPick(){
   const k=dkid();
-  const done=t=>(k.dt[t.id+':a']?1:0)+(k.dt[t.id+':b']?1:0);
+  const done=t=>(k.dt[t.id+':a']?1:0)+(k.dt[t.id+':b']?1:0), lv=dLevel();
+  const nN=DE.texts.filter(t=>levelOf(t)==='normal').length, nS=DE.texts.filter(t=>levelOf(t)==='schwer').length;
   return header(`<button class="btn-link" data-act="to-de">Zurück</button>`)+
   `<div class="stack-s"><h1>Diktat schreiben</h1><p class="muted">Ich lese dir jeden Satz erst ganz und dann in kleinen Teilen vor. Du schreibst mit. Achte auf Groß- und Kleinschreibung und auf die Satzzeichen.</p></div>
   ${noVoice()}
+  <section class="panel"><span class="label">Schwierigkeit</span>
+    <div class="chips" style="justify-content:flex-start">
+      <button class="chip" aria-pressed="${lv==='normal'}" data-act="d-level" data-id="normal">Normal</button>
+      <button class="chip" aria-pressed="${lv==='schwer'}" data-act="d-level" data-id="schwer">Schwer</button>
+    </div>
+    <p class="note">${lv==='schwer'?`${nS} Diktate mit längeren Sätzen, mehr Kommas, wörtlicher Rede sowie Frage- und Ausrufesätzen. Anführungszeichen kannst du einfach mit " tippen.`:`${nN} Diktate mit kürzeren Sätzen. Gut zum Einsteigen.`}</p>
+  </section>
   <section class="panel"><span class="label">Thema</span>
     <div class="chips" style="justify-content:flex-start">
       <button class="chip" aria-pressed="${!S.dtext}" data-act="d-text" data-id="">Überrasch mich</button>
-      ${DE.texts.map(t=>`<button class="chip" aria-pressed="${S.dtext===t.id}" data-act="d-text" data-id="${esc(t.id)}">${esc(t.title)}${done(t)===2?' ✓':''}</button>`).join('')}
+      ${DE.texts.filter(t=>levelOf(t)===lv).map(t=>`<button class="chip" aria-pressed="${S.dtext===t.id}" data-act="d-text" data-id="${esc(t.id)}">${esc(t.title)}${done(t)===2?' ✓':''}</button>`).join('')}
     </div>
     <p class="note">✓ = schon ganz geschrieben. Bei „Überrasch mich“ kommt zuerst ein Diktat, das du noch nicht hattest.</p>
   </section>
@@ -1008,9 +1033,10 @@ function updateDict(){
   } else {
     body=`<div class="listen"><button type="button" class="btn btn-primary" data-act="dict-say" data-mode="full" data-keepfocus>${EAR_ICON} Ganzer Satz</button><button type="button" class="btn btn-ghost" data-act="dict-say" data-mode="slow" data-keepfocus>${SNAIL} In Teilen</button></div>
       <div class="parts"><span class="small muted">Teil nochmal:</span>${parts.map((p,i)=>`<button type="button" class="chip" data-act="dict-say" data-mode="part" data-i="${i}" data-keepfocus>${i+1}</button>`).join('')}</div>
-      <p class="note">Schreib den ganzen Satz mit Punkt. Mit Return prüfst du.</p>`;
+      ${hasSpeech(sent)?`<p class="tip">In diesem Satz gibt es <b>wörtliche Rede</b>. Denk an Anführungszeichen, Doppelpunkt oder Komma.</p>`:''}
+      <p class="note">Schreib den ganzen Satz mit Satzzeichen. Mit Return prüfst du.</p>`;
   }
-  document.getElementById('card').innerHTML=`<div class="head"><span class="label">${esc(s.text.title)} · Satz ${s.i+1} von ${s.sents.length}</span></div>${body}`;
+  document.getElementById('card').innerHTML=`<div class="head"><span class="label">${levelOf(s.text)==='schwer'?'Schwer · ':''}${esc(s.text.title)} · Satz ${s.i+1} von ${s.sents.length}</span></div>${body}`;
   const inp=document.getElementById('dcin'), btn=document.getElementById('go');
   inp.value=''; inp.placeholder=v?'Weiter mit Return …':'Schreibe den Satz …';
   inp.setAttribute('enterkeyhint', v?'next':'go'); btn.textContent=v?(s.i+1>=s.sents.length?'Ergebnis':'Nächster Satz'):'Prüfen';
@@ -1071,6 +1097,7 @@ function deAction(act, el){
     case 'd-quit': go(S.ds && S.ds.res.length ? 'ddone' : 'de'); break;
     case 'd-retry': { const wrong=S.ds.res.filter(r=>r.r!=='right').map(r=>r.item); S.ds={items:shuffle(wrong), i:0, res:[], verdict:null, spoken:-1}; go('dpractice'); break; }
     case 'd-text': S.dtext=el.dataset.id||null; renderKeepScroll(); break;
+    case 'd-level': S.dlevel=el.dataset.id; k.dlevel=S.dlevel; save(); { const t=DE.texts.find(x=>x.id===S.dtext); if(t && levelOf(t)!==S.dlevel) S.dtext=null; } renderKeepScroll(); break;
     case 'dict-start': pickDict(+el.dataset.n); go('dict'); break;
     case 'dict-say': speakSentence(el.dataset.mode, +el.dataset.i||0); break;
     case 'dict-quit': if(S.dc && S.dc.res.length){ finishDict(); go('dictdone'); } else go('dictpick'); break;

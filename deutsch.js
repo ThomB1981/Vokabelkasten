@@ -162,7 +162,9 @@ merk: [
 },
 
 /* Kurze Diktate: Jeder Text hat zwei Teile mit je 5 Sätzen.
-   Bei 5 Sätzen wird ein Teil diktiert, bei 10 Sätzen der ganze Text. */
+   Bei 5 Sätzen wird ein Teil diktiert, bei 10 Sätzen der ganze Text.
+   Schwierigkeit: ohne Angabe „normal“, mit level:'schwer' längere Satzgefüge,
+   wörtliche Rede (mit „ “), Appositionen, Frage- und Ausrufesätze. */
 texts: [
   {id:'schultag', title:'Der erste Schultag', a:[
     'Am ersten Schultag war ich ziemlich aufgeregt.',
@@ -554,265 +556,265 @@ texts: [
     'Gerade als der Vogel landen wollte, klingelte mein Wecker.',
     'Schade, dass ich nie erfahren werde, wohin er mich bringen wollte.'
   ]},
-  {id:'zirkus', title:'Im Zirkus', a:[
-    'Am Wochenende gastierte ein kleiner Zirkus in unserer Stadt.',
-    'Das bunte Zelt stand auf der großen Wiese hinter dem Sportplatz.',
-    'Schon vor der Vorstellung durften wir die Ponys streicheln.',
-    'Pünktlich um drei Uhr ging das Licht aus und die Musik begann.',
-    'Ein Clown stolperte in die Manege und alle Kinder lachten laut.'
+  {id:'zirkus', title:'Im Zirkus', level:'schwer', a:[
+    'Als der kleine Zirkus Bellini am Wochenende in unsere Stadt kam, waren alle Kinder ganz aufgeregt.',
+    'Das große Zelt mit den roten und weißen Streifen stand auf der Wiese, die direkt hinter dem Sportplatz liegt.',
+    'Vor der Vorstellung fragte ich den Tierpfleger: „Darf ich die Ponys einmal streicheln?“',
+    '„Natürlich, aber sei bitte vorsichtig“, antwortete er freundlich.',
+    'Als pünktlich um drei Uhr das Licht ausging, wurde es im Zelt mucksmäuschenstill.'
   ], b:[
-    'Danach zeigten zwei Artistinnen ihre Kunststücke hoch oben am Trapez.',
-    'Ich hielt vor Aufregung die Luft an.',
-    'Ein Jongleur warf sieben Bälle gleichzeitig in die Luft.',
-    'Zum Schluss ritten alle Artisten auf Pferden durch die Manege.',
-    'Auf dem Heimweg wollte ich unbedingt selbst jonglieren lernen.'
+    'Herr Bellini, der Zirkusdirektor, begrüßte das Publikum mit einer tiefen Verbeugung.',
+    'Danach zeigten zwei Artistinnen am Trapez so gefährliche Kunststücke, dass ich vor Aufregung die Luft anhielt.',
+    'Ein Clown, der viel zu große Schuhe trug, stolperte ständig über seine eigenen Füße.',
+    '„Das ist überhaupt nicht lustig!“, rief er beleidigt, doch alle lachten nur noch lauter.',
+    'Auf dem Heimweg beschloss ich, dass ich unbedingt das Jonglieren lernen möchte.'
   ]},
-  {id:'flohmarkt', title:'Der Flohmarkt', a:[
-    'Am Sonntag fand auf dem Schulhof ein großer Flohmarkt statt.',
-    'Wir hatten unsere alten Spielsachen in Kisten gepackt.',
-    'Schon früh am Morgen bauten wir unseren Stand auf.',
-    'Ein Mädchen kaufte meine Puppe für zwei Euro.',
-    'Mein Bruder verkaufte fast alle seine Comics.'
+  {id:'flohmarkt', title:'Der Flohmarkt', level:'schwer', a:[
+    'Am Sonntag fand auf dem Schulhof der große Flohmarkt statt, auf den wir uns schon seit Wochen gefreut hatten.',
+    'Schon früh am Morgen bauten wir unseren Stand auf, obwohl es noch ziemlich kalt war.',
+    'Auf dem Tisch lagen Bücher, Puzzles, Kuscheltiere und ein altes Radio.',
+    'Ein Mädchen zeigte auf meine Puppe und fragte: „Wie viel soll die kosten?“',
+    '„Für dich nur zwei Euro“, antwortete ich lächelnd.'
   ], b:[
-    'Natürlich sahen wir uns auch die anderen Stände an.',
-    'Dort entdeckte ich ein Brettspiel, das ich schon lange haben wollte.',
-    'Der Verkäufer wollte fünf Euro dafür haben.',
-    'Nach einigem Handeln bekam ich es für drei Euro.',
-    'Am Ende hatten wir mehr eingekauft als verkauft.'
+    'Natürlich schauten wir uns auch an den anderen Ständen um, als gerade wenig los war.',
+    'Dort entdeckte ich ein Brettspiel, das ich mir schon lange gewünscht hatte.',
+    'Der Verkäufer, ein älterer Herr mit Hut, wollte zunächst fünf Euro dafür haben.',
+    'Nach langem Handeln sagte er schließlich: „Na gut, du bekommst es für drei Euro.“',
+    'Als wir am Nachmittag nachrechneten, hatten wir mehr Geld ausgegeben als eingenommen.'
   ]},
-  {id:'picknick', title:'Das Picknick', a:[
-    'Bei schönem Wetter machten wir ein Picknick im Park.',
-    'Mama hatte belegte Brötchen, Obst und Kuchen eingepackt.',
-    'Wir breiteten eine große Decke unter einem schattigen Baum aus.',
-    'Plötzlich kamen ein paar freche Enten angewatschelt.',
-    'Sie wollten unbedingt etwas von unseren Brötchen haben.'
+  {id:'picknick', title:'Das Picknick', level:'schwer', a:[
+    'Weil das Wetter so schön war, machten wir spontan ein Picknick im Park.',
+    'Mama packte belegte Brötchen, frisches Obst, Saft und einen Marmorkuchen ein.',
+    'Unter einer alten Kastanie, die angenehmen Schatten spendete, breiteten wir unsere Decke aus.',
+    'Kaum hatten wir uns hingesetzt, kamen auch schon ein paar freche Enten angewatschelt.',
+    '„Bitte füttert die Enten nicht mit Brot“, sagte Papa, „denn das ist für sie ungesund.“'
   ], b:[
-    'Wir warfen ihnen aber nichts zu, weil Brot für Enten ungesund ist.',
-    'Nach dem Essen spielten wir Federball auf der Wiese.',
-    'Mein Vater legte sich in die Sonne und schlief sofort ein.',
-    'Leider hatten sich inzwischen Ameisen über den Kuchen hergemacht.',
-    'Trotzdem war es ein wunderschöner Nachmittag.'
+    'Nach dem Essen spielten wir Federball, bis wir völlig außer Atem waren.',
+    'Mein Vater legte sich in die Sonne und war nach wenigen Minuten eingeschlafen.',
+    'Plötzlich rief meine Schwester entsetzt: „Schaut mal, die Ameisen sind im Kuchen!“',
+    'Tatsächlich krabbelten unzählige kleine Ameisen über die Reste unseres Kuchens.',
+    'Trotzdem waren wir uns einig, dass es ein wunderschöner Nachmittag gewesen war.'
   ]},
-  {id:'zahnarzt', title:'Bei der Zahnärztin', a:[
-    'Gestern hatte ich einen Termin bei der Zahnärztin.',
-    'Im Wartezimmer war ich ein bisschen nervös.',
-    'Die Zahnärztin begrüßte mich freundlich und zeigte mir ihre Geräte.',
-    'Dann musste ich mich auf den großen Stuhl legen und den Mund weit öffnen.',
-    'Mit einem kleinen Spiegel untersuchte sie jeden Zahn.'
+  {id:'zahnarzt', title:'Bei der Zahnärztin', level:'schwer', a:[
+    'Gestern hatte ich einen Termin bei Frau Doktor Yilmaz, unserer Zahnärztin.',
+    'Im Wartezimmer blätterte ich in einer Zeitschrift, obwohl ich ziemlich nervös war.',
+    'Als ich aufgerufen wurde, begrüßte mich die Zahnärztin freundlich und erklärte mir ihre Geräte.',
+    '„Leg dich ganz entspannt hin und öffne den Mund weit“, bat sie mich.',
+    'Mit einem kleinen Spiegel und einer Sonde untersuchte sie sorgfältig jeden einzelnen Zahn.'
   ], b:[
-    'Zum Glück hatte ich kein einziges Loch.',
-    'Sie lobte mich, weil ich meine Zähne so gründlich putze.',
-    'Danach erklärte sie mir, wie man Zahnseide richtig benutzt.',
-    'Zur Belohnung durfte ich mir ein kleines Geschenk aussuchen.',
-    'Ich nahm einen Radiergummi in der Form eines Dinosauriers.'
+    '„Hast du ein Loch gefunden?“, fragte ich besorgt.',
+    '„Nein, deine Zähne sind völlig gesund“, antwortete sie, „du putzt sie offenbar sehr gründlich.“',
+    'Anschließend zeigte sie mir, wie man Zahnseide richtig benutzt, damit auch die Zwischenräume sauber werden.',
+    'Zur Belohnung durfte ich mir aus einer großen Kiste ein kleines Geschenk aussuchen.',
+    'Ich entschied mich für einen Radiergummi, der wie ein Dinosaurier aussieht.'
   ]},
-  {id:'baumhaus', title:'Das Baumhaus', a:[
-    'In den Ferien bauten wir mit Opa ein Baumhaus.',
-    'Es steht in einer alten Eiche ganz hinten im Garten.',
-    'Zuerst sägten wir die Bretter auf die richtige Länge.',
-    'Dann nagelten wir sie vorsichtig an den dicken Ästen fest.',
-    'Ich habe mir dabei einmal auf den Daumen gehauen.'
+  {id:'baumhaus', title:'Das Baumhaus', level:'schwer', a:[
+    'In den Herbstferien bauten wir mit Opa, der früher Schreiner war, ein richtiges Baumhaus.',
+    'Es steht in der alten Eiche, die ganz hinten in unserem Garten wächst.',
+    'Zuerst maßen wir alle Bretter genau aus und sägten sie auf die richtige Länge.',
+    'Beim Festnageln haute ich mir einmal so fest auf den Daumen, dass er ganz blau wurde.',
+    '„Das passiert jedem Handwerker“, tröstete mich Opa und klebte mir ein Pflaster auf.'
   ], b:[
-    'Nach drei Tagen war das Baumhaus endlich fertig.',
-    'Es hat ein kleines Fenster und eine Strickleiter.',
-    'Oben haben wir Kissen, Taschenlampen und ein paar Bücher.',
-    'Am liebsten sitze ich dort mit meinem Freund und wir erzählen uns Geschichten.',
-    'Erwachsene dürfen nur hinauf, wenn sie das Passwort kennen.'
+    'Nach drei anstrengenden Tagen war das Baumhaus endlich fertig.',
+    'Es hat ein kleines Fenster, ein schräges Dach und eine Strickleiter, die man hochziehen kann.',
+    'Oben liegen Kissen, Decken, Taschenlampen und ein Stapel spannender Bücher.',
+    'Wer zu uns hinaufklettern möchte, muss zuerst das geheime Passwort kennen.',
+    'Meine Mutter fragte lachend: „Bekomme ich das Passwort auch, wenn ich euch Kuchen bringe?“'
   ]},
-  {id:'schulgarten', title:'Der Schulgarten', a:[
-    'An unserer Schule gibt es einen großen Schulgarten.',
-    'Jede Klasse hat dort ein eigenes Beet.',
-    'Im Frühling haben wir Möhren, Radieschen und Salat gesät.',
-    'Jeden Morgen hat ein anderes Kind die Pflanzen gegossen.',
-    'Bald zeigten sich die ersten grünen Blätter.'
+  {id:'schulgarten', title:'Der Schulgarten', level:'schwer', a:[
+    'Hinter unserer Schule gibt es einen großen Garten, in dem jede Klasse ein eigenes Beet hat.',
+    'Im Frühling säten wir Möhren, Radieschen, Salat und Sonnenblumen.',
+    'Frau Kaya, unsere Biologielehrerin, erklärte uns, wie tief die Samen in die Erde gehören.',
+    'Jeden Morgen musste ein anderes Kind die Pflanzen gießen, damit sie nicht vertrockneten.',
+    'Schon nach zwei Wochen entdeckten wir die ersten zarten Blätter.'
   ], b:[
-    'Leider hatten auch die Schnecken großen Hunger.',
-    'Deshalb sammelten wir sie ein und brachten sie auf eine Wiese.',
-    'Im Sommer konnten wir endlich ernten.',
-    'Die Radieschen waren knackig und ein bisschen scharf.',
-    'Aus dem Salat machten wir mit unserer Lehrerin ein leckeres Frühstück.'
+    'Leider hatten auch die Schnecken das frische Grün entdeckt.',
+    '„Was machen wir denn jetzt mit den vielen Schnecken?“, fragte mein Freund ratlos.',
+    'Wir sammelten sie vorsichtig ein und brachten sie auf eine Wiese, die weit entfernt lag.',
+    'Als wir im Sommer endlich ernten konnten, waren die Radieschen knackig und ein wenig scharf.',
+    'Aus dem Salat bereiteten wir gemeinsam ein gesundes Frühstück für die ganze Klasse zu.'
   ]},
-  {id:'kino', title:'Im Kino', a:[
-    'Zum Geburtstag hat mich meine Tante ins Kino eingeladen.',
-    'Wir kauften uns eine große Tüte Popcorn und zwei Getränke.',
-    'Der Saal war dunkel und die Sessel waren sehr bequem.',
-    'Vor dem Film lief viel Werbung, die ich ziemlich langweilig fand.',
-    'Dann begann endlich der Film über einen mutigen Fuchs.'
+  {id:'kino', title:'Im Kino', level:'schwer', a:[
+    'Zu meinem Geburtstag hat mich meine Tante Paula, die in Köln wohnt, ins Kino eingeladen.',
+    'An der Kasse fragte sie: „Möchtest du lieber süßes oder salziges Popcorn?“',
+    'Ich entschied mich für die süße Sorte, obwohl ich eigentlich beides gern mag.',
+    'Der Saal war schon dunkel, als wir unsere Plätze in der siebten Reihe fanden.',
+    'Vor dem Film lief so viel Werbung, dass ich schon fast ungeduldig wurde.'
   ], b:[
-    'Der Fuchs musste seine Familie vor einem gefährlichen Jäger retten.',
+    'Endlich begann der Film über einen mutigen Fuchs, der seine Familie vor einem Jäger retten muss.',
     'An manchen Stellen war es so spannend, dass ich mir die Augen zuhielt.',
-    'Am Ende ging aber alles gut aus.',
-    'Als das Licht wieder anging, war das Popcorn längst leer.',
-    'Auf dem Heimweg erzählten wir uns noch lange von unseren Lieblingsszenen.'
+    '„Du kannst wieder hinschauen, es ist vorbei“, flüsterte meine Tante.',
+    'Als das Licht wieder anging, war die riesige Popcorntüte längst leer.',
+    'Auf dem Heimweg diskutierten wir darüber, welche Szene die beste gewesen war.'
   ]},
-  {id:'berge', title:'Wanderung in den Bergen', a:[
-    'In den Osterferien fuhren wir in die Berge.',
-    'Gleich am ersten Tag wanderten wir zu einer Hütte hinauf.',
-    'Der Weg war steil und steinig.',
-    'Nach zwei Stunden taten mir die Füße weh.',
-    'Doch die Aussicht von oben war wunderschön.'
+  {id:'berge', title:'Wanderung in den Bergen', level:'schwer', a:[
+    'In den Osterferien fuhren wir nach Österreich, wo wir eine Woche in einem kleinen Bergdorf verbrachten.',
+    'Gleich am ersten Tag wanderten wir zu einer Hütte hinauf, die auf über tausend Metern Höhe liegt.',
+    'Der schmale Weg war steil, steinig und an manchen Stellen ziemlich rutschig.',
+    '„Wie weit ist es denn noch?“, jammerte mein kleiner Bruder nach einer Stunde.',
+    '„Nur noch bis zu dem großen Felsen dort oben“, antwortete Papa geduldig.'
   ], b:[
-    'Unter uns lag ein blauer See und die Häuser im Tal waren winzig klein.',
-    'In der Hütte aßen wir Suppe und tranken heiße Schokolade.',
-    'Auf dem Rückweg sahen wir sogar ein Murmeltier.',
-    'Es pfiff laut und verschwand blitzschnell in seinem Bau.',
-    'Am Abend schlief ich sofort ein, weil ich so müde war.'
+    'Als wir endlich oben ankamen, lag unter uns ein tiefblauer See, der in der Sonne glitzerte.',
+    'In der gemütlichen Hütte aßen wir Erbsensuppe und tranken heiße Schokolade.',
+    'Auf dem Rückweg hörten wir plötzlich einen lauten, schrillen Pfiff.',
+    'Ein Murmeltier, das vor seinem Bau saß, hatte seine Familie vor uns gewarnt.',
+    'Am Abend war ich so erschöpft, dass ich schon beim Essen fast eingeschlafen wäre.'
   ]},
-  {id:'schluessel', title:'Der verlorene Schlüssel', a:[
-    'Als ich gestern aus der Schule kam, war die Haustür verschlossen.',
-    'Ich suchte in meinem Rucksack nach dem Schlüssel.',
-    'Doch ich konnte ihn nirgends finden.',
-    'Meine Eltern waren noch bei der Arbeit und ich wusste nicht weiter.',
-    'Zum Glück wohnt nebenan eine nette alte Dame.'
+  {id:'schluessel', title:'Der verlorene Schlüssel', level:'schwer', a:[
+    'Als ich gestern nach der sechsten Stunde nach Hause kam, war die Haustür verschlossen.',
+    'Hektisch durchsuchte ich meinen Rucksack, meine Jackentaschen und sogar meine Federmappe.',
+    'Doch der Schlüssel, den ich morgens noch in der Hand gehabt hatte, war spurlos verschwunden.',
+    'Meine Eltern waren noch bei der Arbeit, deshalb wusste ich zuerst nicht weiter.',
+    'Zum Glück öffnete Frau Schneider, unsere Nachbarin, gerade ihr Fenster.'
   ], b:[
-    'Sie ließ mich herein und gab mir ein Glas Saft.',
-    'Von ihrem Telefon aus rief ich meine Mutter an.',
-    'Sie versprach mir, dass sie bald nach Hause kommt.',
-    'Eine halbe Stunde später stand sie vor der Tür.',
-    'Abends fand ich den Schlüssel in meiner Jackentasche.'
+    '„Hast du etwa deinen Schlüssel vergessen?“, fragte sie lächelnd.',
+    'Sie ließ mich herein, gab mir ein Glas Saft und lieh mir ihr Telefon.',
+    'Meine Mutter versprach mir am Telefon, dass sie sich sofort auf den Weg macht.',
+    'Eine halbe Stunde später stand sie vor der Tür und sagte erleichtert: „Da bist du ja!“',
+    'Abends fand ich den Schlüssel ausgerechnet in meiner Sporttasche, in der ich gar nicht gesucht hatte.'
   ]},
-  {id:'eule', title:'Die Eule', a:[
-    'Eulen sind Vögel, die vor allem nachts unterwegs sind.',
-    'Mit ihren großen Augen können sie auch im Dunkeln gut sehen.',
-    'Außerdem hören sie so gut, dass sie sogar eine Maus unter dem Schnee entdecken.',
-    'Ihren Kopf können Eulen sehr weit nach hinten drehen.',
-    'Wenn sie fliegen, hört man fast kein Geräusch.'
+  {id:'eule', title:'Die Eule', level:'schwer', a:[
+    'Eulen sind Vögel, die vor allem in der Dämmerung und in der Nacht auf die Jagd gehen.',
+    'Mit ihren riesigen Augen können sie auch im Dunkeln hervorragend sehen.',
+    'Ihr Gehör ist so empfindlich, dass sie sogar eine Maus unter einer dicken Schneedecke hören.',
+    'Wusstest du, dass Eulen ihren Kopf sehr weit nach hinten drehen können?',
+    'Weil ihre Federn besonders weich sind, fliegen sie fast lautlos durch die Nacht.'
   ], b:[
-    'Tagsüber schlafen die meisten Eulen in Baumhöhlen oder alten Scheunen.',
-    'Sie fressen vor allem Mäuse, aber auch Insekten und kleine Vögel.',
-    'Die Reste, die sie nicht verdauen können, würgen sie wieder heraus.',
-    'Diese kleinen Ballen nennt man Gewölle.',
-    'Forscher können daran erkennen, was die Eule gefressen hat.'
+    'Tagsüber schlafen die meisten Eulen in Baumhöhlen, in Felsspalten oder auf alten Dachböden.',
+    'Sie ernähren sich vor allem von Mäusen, aber auch von Insekten, Fröschen und kleinen Vögeln.',
+    'Die unverdaulichen Reste, also Knochen, Fell und Federn, würgen sie als kleine Ballen wieder heraus.',
+    'Diese Ballen nennt man Gewölle.',
+    '„Daran können wir erkennen, was die Eule gefressen hat“, erklärte uns die Biologin im Naturschutzzentrum.'
   ]},
-  {id:'pinguine', title:'Die Pinguine', a:[
-    'Pinguine sind Vögel, die nicht fliegen können.',
-    'Dafür sind sie ausgezeichnete Schwimmer.',
-    'Unter Wasser bewegen sie ihre Flügel wie Flossen.',
-    'Die meisten Pinguine leben auf der Südhalbkugel der Erde.',
-    'Kaiserpinguine leben sogar in der eisigen Antarktis.'
+  {id:'pinguine', title:'Die Pinguine', level:'schwer', a:[
+    'Pinguine sind Vögel, die zwar nicht fliegen, aber dafür ausgezeichnet schwimmen können.',
+    'Unter Wasser benutzen sie ihre kurzen Flügel wie Flossen und erreichen dabei eine erstaunliche Geschwindigkeit.',
+    'Die meisten Pinguinarten leben auf der Südhalbkugel, zum Beispiel in Südamerika, Afrika oder Australien.',
+    'Der Kaiserpinguin, die größte aller Pinguinarten, lebt sogar in der eisigen Antarktis.',
+    'Dort ist es im Winter monatelang dunkel und die Temperaturen sinken weit unter null Grad.'
   ], b:[
-    'Dort ist es im Winter dunkel und bitterkalt.',
-    'Damit sie nicht frieren, stehen die Pinguine eng zusammen.',
-    'Die Tiere in der Mitte haben es am wärmsten.',
-    'Nach einer Weile tauschen sie die Plätze, damit niemand zu lange außen steht.',
-    'Die Väter wärmen das Ei auf ihren Füßen, bis das Küken schlüpft.'
+    'Damit sie nicht erfrieren, drängen sich die Tiere eng aneinander.',
+    'Wer in der Mitte steht, hat es am wärmsten.',
+    'Nach einer Weile wechseln die Pinguine ihre Plätze, damit niemand zu lange am Rand frieren muss.',
+    'Bei den Kaiserpinguinen brüten die Väter das Ei aus, während die Mütter im Meer auf Futtersuche sind.',
+    'Kannst du dir vorstellen, dass ein Pinguinvater wochenlang nichts frisst?'
   ]},
-  {id:'fruehling', title:'Der Frühling kommt', a:[
-    'Nach dem langen Winter wird es endlich wieder wärmer.',
-    'Die Tage werden länger und die Sonne scheint öfter.',
-    'Im Garten blühen die ersten Schneeglöckchen und Krokusse.',
-    'Morgens weckt mich das fröhliche Zwitschern der Vögel.',
-    'Die Amseln bauen in unserer Hecke schon ihr Nest.'
+  {id:'fruehling', title:'Der Frühling kommt', level:'schwer', a:[
+    'Nach dem langen, grauen Winter wird es endlich wieder wärmer.',
+    'Die Tage werden länger, die Sonne scheint öfter und die Luft riecht nach frischem Gras.',
+    'Im Garten blühen die ersten Schneeglöckchen, Krokusse und Narzissen.',
+    'Jeden Morgen weckt mich das fröhliche Zwitschern der Amseln, die in unserer Hecke ihr Nest bauen.',
+    '„Endlich können wir wieder draußen spielen!“, ruft meine Schwester begeistert.'
   ], b:[
-    'Am Nachmittag können wir endlich wieder draußen spielen.',
-    'Ich hole mein Fahrrad aus dem Keller und pumpe die Reifen auf.',
-    'Mit meinen Freunden fahre ich zum Spielplatz am Bach.',
-    'Dort bauen wir aus Steinen und Ästen einen kleinen Staudamm.',
-    'Wenn wir abends nach Hause kommen, sind unsere Schuhe voller Matsch.'
+    'Nach den Hausaufgaben hole ich mein Fahrrad aus dem Keller und pumpe die Reifen auf.',
+    'Zusammen mit meinen Freunden fahre ich zum Bach, der hinter dem Spielplatz fließt.',
+    'Dort bauen wir aus Steinen, Ästen und Schlamm einen kleinen Staudamm.',
+    'Wenn das Wasser sich dahinter staut, entsteht ein kleiner See, auf dem wir Rindenboote fahren lassen.',
+    'Als ich abends nach Hause komme, sagt Mama kopfschüttelnd: „Deine Schuhe sind ja voller Matsch!“'
   ]},
-  {id:'projektwoche', title:'Die Projektwoche', a:[
-    'Vor den Sommerferien hatten wir an unserer Schule eine Projektwoche.',
-    'Jedes Kind durfte sich ein Thema aussuchen.',
-    'Ich habe mich für das Projekt über Ritter entschieden.',
-    'Wir bastelten Schwerter und Schilde aus Pappe.',
-    'Außerdem lernten wir, wie die Menschen damals gelebt haben.'
+  {id:'projektwoche', title:'Die Projektwoche', level:'schwer', a:[
+    'Vor den Sommerferien fand an unserer Schule eine Projektwoche statt, auf die sich alle gefreut hatten.',
+    'Jedes Kind durfte sich aus einer langen Liste ein Thema aussuchen.',
+    'Ich entschied mich für das Projekt über das Leben im Mittelalter, das zwei Geschichtslehrer leiteten.',
+    'Wir bastelten Schwerter und Schilde aus Pappe und lernten, wie die Menschen damals gelebt haben.',
+    'Besonders spannend fand ich, dass viele Kinder damals schon früh arbeiten mussten.'
   ], b:[
-    'Eine andere Gruppe hat einen Film über unsere Schule gedreht.',
-    'Am Freitag fand ein großes Fest statt.',
-    'Alle Gruppen stellten vor, was sie in der Woche gemacht hatten.',
-    'Viele Eltern und Großeltern kamen zu Besuch.',
-    'Zum Schluss gab es Würstchen, Salate und einen riesigen Kuchen.'
+    'Eine andere Gruppe drehte einen kurzen Film, in dem unsere Schule vorgestellt wird.',
+    'Am Freitag fand ein großes Schulfest statt, zu dem auch Eltern und Großeltern eingeladen waren.',
+    'Frau Lehmann, unsere Schulleiterin, eröffnete das Fest mit einer kurzen Rede.',
+    '„Ich bin stolz auf alles, was ihr in dieser Woche geschafft habt“, sagte sie.',
+    'Zum Schluss gab es Würstchen, verschiedene Salate und einen riesigen Kuchen.'
   ]},
-  {id:'baeckerei', title:'In der Backstube', a:[
-    'Mit unserer Klasse besuchten wir eine Bäckerei.',
-    'Der Bäcker zeigte uns seine Backstube hinter dem Laden.',
-    'Er erzählte, dass er jede Nacht schon um drei Uhr aufsteht.',
-    'In großen Schüsseln rührte eine Maschine den Teig.',
-    'Überall lag Mehl und es roch herrlich nach frischem Brot.'
+  {id:'baeckerei', title:'In der Backstube', level:'schwer', a:[
+    'Mit unserer Klasse besuchten wir die Bäckerei Hoffmann, die es schon seit über hundert Jahren gibt.',
+    'Herr Hoffmann, der Bäckermeister, führte uns durch die warme Backstube hinter dem Laden.',
+    '„Jede Nacht stehe ich schon um drei Uhr auf“, erzählte er, „damit morgens frische Brötchen da sind.“',
+    'In riesigen Schüsseln knetete eine Maschine den Teig, während seine Gesellen Brote formten.',
+    'Überall lag feines Mehl und es duftete herrlich nach warmem Brot.'
   ], b:[
-    'Jedes Kind durfte eine eigene Brezel formen.',
-    'Das war schwieriger, als es aussah.',
-    'Meine Brezel sah zuerst aus wie eine Schlange.',
-    'Nach dem Backen schmeckte sie trotzdem köstlich.',
-    'Zum Abschied schenkte uns der Bäcker noch eine Tüte Plätzchen.'
+    'Danach durfte jedes Kind aus einem Teigstrang eine eigene Brezel formen.',
+    'Das war viel schwieriger, als es bei Herrn Hoffmann ausgesehen hatte.',
+    '„Deine Brezel sieht aus wie eine Schlange“, lachte mein Freund.',
+    'Nach dem Backen schmeckte sie trotzdem so köstlich, dass ich sie sofort aufaß.',
+    'Zum Abschied schenkte uns der Bäckermeister eine Tüte Plätzchen, die noch warm waren.'
   ]},
-  {id:'feuerwehr', title:'Bei der Feuerwehr', a:[
-    'Am Tag der offenen Tür besuchten wir die Feuerwache.',
-    'In der großen Halle standen drei rote Feuerwehrautos.',
-    'Ein Feuerwehrmann erklärte uns, wie ein Einsatz abläuft.',
-    'Wenn der Alarm ertönt, müssen alle innerhalb weniger Minuten losfahren.',
-    'Wir durften sogar in den Wagen klettern und die Sirene anschalten.'
+  {id:'feuerwehr', title:'Bei der Feuerwehr', level:'schwer', a:[
+    'Am Tag der offenen Tür besuchten wir die Feuerwache, die nur wenige Straßen von unserer Schule entfernt liegt.',
+    'In der großen Fahrzeughalle standen drei rote Löschfahrzeuge und ein Rettungswagen.',
+    'Herr Demir, ein erfahrener Feuerwehrmann, erklärte uns, wie ein Einsatz abläuft.',
+    '„Wenn der Alarm ertönt, müssen wir innerhalb weniger Minuten ausrücken“, sagte er.',
+    'Anschließend durften wir in das Fahrzeug klettern und sogar kurz die Sirene einschalten.'
   ], b:[
-    'Danach probierten wir einen schweren Helm und eine Jacke an.',
-    'Mit einem Schlauch spritzten wir auf ein kleines Holzhaus.',
-    'Zum Schluss fuhr die Drehleiter hoch in den Himmel hinauf.',
-    'Oben stand ein Feuerwehrmann und winkte uns zu.',
-    'Seit diesem Tag möchte mein Bruder unbedingt zur Feuerwehr.'
+    'Danach probierten wir einen Helm und eine Jacke an, die überraschend schwer waren.',
+    'Mit einem langen Schlauch spritzten wir auf ein kleines Holzhaus, in dem angeblich ein Feuer brannte.',
+    'Zum Schluss fuhr die Drehleiter so hoch hinauf, dass wir den Kopf weit in den Nacken legen mussten.',
+    '„Möchte jemand von euch später zur Feuerwehr?“, fragte Herr Demir.',
+    'Mein Bruder streckte sofort die Hand in die Höhe und rief: „Ich!“'
   ]},
-  {id:'ferienlager', title:'Im Ferienlager', a:[
-    'In den Sommerferien fuhr ich zum ersten Mal in ein Ferienlager.',
-    'Wir schliefen in großen Zelten am Rand eines Waldes.',
-    'In meinem Zelt waren fünf andere Jungen.',
-    'Abends saßen wir am Lagerfeuer und grillten Stockbrot.',
-    'Ein Betreuer spielte Gitarre und wir sangen Lieder.'
+  {id:'ferienlager', title:'Im Ferienlager', level:'schwer', a:[
+    'In den Sommerferien fuhr ich zum ersten Mal in ein Ferienlager, das am Rand eines großen Waldes liegt.',
+    'Wir schliefen in Zelten, in denen jeweils sechs Kinder Platz hatten.',
+    'Abends saßen wir am Lagerfeuer, grillten Stockbrot und sangen Lieder.',
+    'Tom, unser Betreuer, spielte dazu auf seiner Gitarre.',
+    'In der ersten Nacht konnte ich kaum schlafen, weil es draußen ständig raschelte.'
   ], b:[
-    'In der ersten Nacht konnte ich kaum schlafen.',
-    'Draußen raschelte es im Gebüsch und eine Eule rief.',
-    'Am nächsten Morgen sahen wir, dass ein Igel um unser Zelt geschlichen war.',
-    'Tagsüber machten wir Ausflüge und spielten Fußball.',
-    'Am letzten Tag wollte keiner von uns nach Hause fahren.'
+    '„Glaubst du, da draußen ist ein Wildschwein?“, flüsterte mein Zeltnachbar ängstlich.',
+    'Am nächsten Morgen entdeckten wir Spuren, die eindeutig von einem Igel stammten.',
+    'Tagsüber machten wir Ausflüge, spielten Fußball oder badeten im See.',
+    'Am letzten Abend gab es eine große Abschiedsfeier mit Musik und Tanz.',
+    'Als der Bus uns abholte, wollte keiner von uns nach Hause fahren.'
   ]},
-  {id:'handy', title:'Das erste Handy', a:[
-    'Zum Geburtstag habe ich mein erstes eigenes Handy bekommen.',
-    'Ich habe mich riesig darüber gefreut.',
-    'Meine Eltern haben aber mit mir feste Regeln vereinbart.',
-    'Während der Hausaufgaben bleibt das Handy in der Küche.',
-    'Beim Essen liegt es ausgeschaltet in einer Schublade.'
+  {id:'handy', title:'Das erste Handy', level:'schwer', a:[
+    'Zu meinem elften Geburtstag habe ich endlich mein erstes eigenes Handy bekommen.',
+    'Bevor ich es benutzen durfte, haben meine Eltern mit mir feste Regeln vereinbart.',
+    'Während der Hausaufgaben bleibt das Handy in der Küche, damit ich mich besser konzentrieren kann.',
+    'Beim Essen liegt es ausgeschaltet in einer Schublade, die niemand öffnen darf.',
+    '„Das ist total unfair!“, beschwerte ich mich am Anfang.'
   ], b:[
-    'Abends darf ich es nur eine halbe Stunde benutzen.',
-    'Am Anfang fand ich diese Regeln ziemlich streng.',
-    'Inzwischen merke ich aber, dass ich mich besser konzentrieren kann.',
-    'Außerdem habe ich wieder mehr Zeit zum Lesen und Spielen.',
-    'Mit meiner Oma telefoniere ich jetzt jeden Sonntag per Video.'
+    'Inzwischen merke ich aber, dass die Regeln mir helfen.',
+    'Ich habe wieder mehr Zeit zum Lesen, zum Fußballspielen und für meine Freunde.',
+    'Mit meiner Oma, die in Hamburg wohnt, telefoniere ich jetzt jeden Sonntag per Video.',
+    'Neulich fragte sie mich: „Kannst du mir zeigen, wie man ein Foto verschickt?“',
+    'Seitdem bin ich in unserer Familie der Experte für alle Fragen rund ums Handy.'
   ]},
-  {id:'drache', title:'Der kleine Drache', a:[
-    'Es war einmal ein kleiner Drache, der kein Feuer spucken konnte.',
-    'Die anderen Drachen lachten ihn deshalb oft aus.',
-    'Traurig zog er in die Welt hinaus.',
-    'Unterwegs traf er eine alte Eule, die sehr weise war.',
-    'Sie gab ihm den Rat, jeden Tag fleißig zu üben.'
+  {id:'drache', title:'Der kleine Drache', level:'schwer', a:[
+    'Es war einmal ein kleiner Drache namens Funkel, der kein Feuer spucken konnte.',
+    'Die anderen Drachen, die stolz auf ihre Flammen waren, lachten ihn deshalb oft aus.',
+    '„Ein Drache ohne Feuer ist doch kein richtiger Drache!“, spotteten sie.',
+    'Traurig verließ Funkel seine Höhle und zog in die weite Welt hinaus.',
+    'Unterwegs begegnete er einer alten Eule, die als besonders weise galt.'
   ], b:[
-    'Der kleine Drache übte morgens, mittags und abends.',
-    'Zuerst kam nur ein wenig Rauch aus seinem Maul.',
-    'Doch eines Tages schoss plötzlich eine helle Flamme heraus.',
-    'Stolz flog er nach Hause zu den anderen Drachen.',
-    'Von nun an lachte niemand mehr über ihn.'
+    'Sie hörte ihm aufmerksam zu und sagte dann: „Wer jeden Tag übt, wird sein Ziel erreichen.“',
+    'Von nun an übte Funkel morgens, mittags und abends, auch wenn es ihm schwerfiel.',
+    'Zuerst kamen nur ein paar graue Rauchwölkchen aus seinem Maul.',
+    'Doch eines Morgens schoss plötzlich eine helle, leuchtende Flamme heraus.',
+    'Als Funkel stolz nach Hause zurückkehrte, staunten die anderen Drachen nicht schlecht.'
   ]},
-  {id:'schatzsuche', title:'Die Schatzsuche', a:[
-    'Auf dem Dachboden fand ich eine alte Karte.',
-    'Darauf war ein Weg zu einem roten Kreuz eingezeichnet.',
-    'Zusammen mit meiner Schwester machte ich mich auf die Suche.',
-    'Wir liefen zuerst bis zur großen Kastanie am Ende der Straße.',
-    'Von dort aus zählten wir zwanzig Schritte in Richtung Bach.'
+  {id:'schatzsuche', title:'Die Schatzsuche', level:'schwer', a:[
+    'Als ich auf dem Dachboden nach meinen alten Inlinern suchte, fand ich eine vergilbte Karte.',
+    'Darauf war ein verschlungener Weg eingezeichnet, der zu einem roten Kreuz führte.',
+    '„Das ist bestimmt eine Schatzkarte!“, rief meine Schwester begeistert.',
+    'Ohne lange zu überlegen, machten wir uns auf die Suche.',
+    'Zuerst liefen wir bis zur großen Kastanie, die am Ende unserer Straße steht.'
   ], b:[
-    'Unter einem großen Stein entdeckten wir eine verrostete Dose.',
-    'Mit zitternden Händen öffneten wir den Deckel.',
-    'In der Dose lagen ein paar Murmeln und ein Zettel.',
-    'Auf dem Zettel stand, dass unser Vater die Dose als Kind versteckt hatte.',
-    'Abends erzählte er uns lachend von seinen eigenen Abenteuern.'
+    'Von dort aus zählten wir zwanzig Schritte in Richtung Bach und suchten den Boden ab.',
+    'Unter einem moosbewachsenen Stein entdeckten wir tatsächlich eine verrostete Blechdose.',
+    'Mit zitternden Händen öffneten wir den Deckel, der ziemlich fest klemmte.',
+    'In der Dose lagen ein paar bunte Murmeln und ein Zettel, auf dem stand: „Versteckt von Peter, zehn Jahre alt.“',
+    'Abends erzählte uns Papa, dessen Name Peter ist, lachend von seinen eigenen Abenteuern.'
   ]},
-  {id:'tierheim', title:'Im Tierheim', a:[
-    'Am Samstag halfen wir im Tierheim unserer Stadt.',
-    'Dort leben Hunde, Katzen und Kaninchen, die kein Zuhause haben.',
-    'Eine Pflegerin zeigte uns die Gehege und erklärte uns die Arbeit.',
-    'Zuerst putzten wir die Näpfe und füllten frisches Wasser ein.',
-    'Danach durften wir mit zwei Hunden spazieren gehen.'
+  {id:'tierheim', title:'Im Tierheim', level:'schwer', a:[
+    'Am Samstag halfen wir im Tierheim unserer Stadt, in dem über hundert Tiere auf ein neues Zuhause warten.',
+    'Frau Weber, die Leiterin des Tierheims, zeigte uns die Gehege und erklärte uns die Arbeit.',
+    'Zuerst spülten wir die Futternäpfe, füllten frisches Wasser ein und fegten den Hof.',
+    '„Wer möchte mit unseren Hunden spazieren gehen?“, fragte sie anschließend.',
+    'Natürlich meldeten wir uns sofort, obwohl es draußen leicht regnete.'
   ], b:[
-    'Der eine Hund hieß Max und zog die ganze Zeit an der Leine.',
-    'Die andere Hündin war schon alt und lief ganz gemütlich neben uns her.',
-    'Später saßen wir bei den Katzen und spielten mit ihnen.',
-    'Eine kleine schwarze Katze schlief sogar auf meinem Schoß ein.',
-    'Am liebsten hätte ich sie sofort mit nach Hause genommen.'
+    'Der eine Hund, ein junger Mischling namens Max, zog die ganze Zeit kräftig an der Leine.',
+    'Die alte Hündin Bella dagegen trottete gemütlich neben uns her.',
+    'Später setzten wir uns zu den Katzen, die neugierig an unseren Schuhen schnupperten.',
+    'Eine kleine schwarze Katze kletterte auf meinen Schoß und schlief sofort ein.',
+    'Auf dem Heimweg fragte ich meine Eltern: „Dürfen wir sie vielleicht adoptieren?“'
   ]}
 ]
 };
