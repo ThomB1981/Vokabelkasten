@@ -1,6 +1,6 @@
 /* Offline-Speicher für den Lernkasten.
    Bei jeder neuen Version VERSION hochzählen, dann holen sich die Geräte die neuen Dateien. */
-const VERSION = 'lernkasten-v9';
+const VERSION = 'lernkasten-v10';
 const FILES = [
   './', './index.html', './vocab.js', './deutsch.js', './manifest.webmanifest',
   './icons/apple-touch-icon.png', './icons/icon-192.png', './icons/icon-512.png',

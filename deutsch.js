@@ -553,6 +553,266 @@ texts: [
     'Auf einem Gipfel lag tiefer Schnee, obwohl es Sommer war.',
     'Gerade als der Vogel landen wollte, klingelte mein Wecker.',
     'Schade, dass ich nie erfahren werde, wohin er mich bringen wollte.'
+  ]},
+  {id:'zirkus', title:'Im Zirkus', a:[
+    'Am Wochenende gastierte ein kleiner Zirkus in unserer Stadt.',
+    'Das bunte Zelt stand auf der großen Wiese hinter dem Sportplatz.',
+    'Schon vor der Vorstellung durften wir die Ponys streicheln.',
+    'Pünktlich um drei Uhr ging das Licht aus und die Musik begann.',
+    'Ein Clown stolperte in die Manege und alle Kinder lachten laut.'
+  ], b:[
+    'Danach zeigten zwei Artistinnen ihre Kunststücke hoch oben am Trapez.',
+    'Ich hielt vor Aufregung die Luft an.',
+    'Ein Jongleur warf sieben Bälle gleichzeitig in die Luft.',
+    'Zum Schluss ritten alle Artisten auf Pferden durch die Manege.',
+    'Auf dem Heimweg wollte ich unbedingt selbst jonglieren lernen.'
+  ]},
+  {id:'flohmarkt', title:'Der Flohmarkt', a:[
+    'Am Sonntag fand auf dem Schulhof ein großer Flohmarkt statt.',
+    'Wir hatten unsere alten Spielsachen in Kisten gepackt.',
+    'Schon früh am Morgen bauten wir unseren Stand auf.',
+    'Ein Mädchen kaufte meine Puppe für zwei Euro.',
+    'Mein Bruder verkaufte fast alle seine Comics.'
+  ], b:[
+    'Natürlich sahen wir uns auch die anderen Stände an.',
+    'Dort entdeckte ich ein Brettspiel, das ich schon lange haben wollte.',
+    'Der Verkäufer wollte fünf Euro dafür haben.',
+    'Nach einigem Handeln bekam ich es für drei Euro.',
+    'Am Ende hatten wir mehr eingekauft als verkauft.'
+  ]},
+  {id:'picknick', title:'Das Picknick', a:[
+    'Bei schönem Wetter machten wir ein Picknick im Park.',
+    'Mama hatte belegte Brötchen, Obst und Kuchen eingepackt.',
+    'Wir breiteten eine große Decke unter einem schattigen Baum aus.',
+    'Plötzlich kamen ein paar freche Enten angewatschelt.',
+    'Sie wollten unbedingt etwas von unseren Brötchen haben.'
+  ], b:[
+    'Wir warfen ihnen aber nichts zu, weil Brot für Enten ungesund ist.',
+    'Nach dem Essen spielten wir Federball auf der Wiese.',
+    'Mein Vater legte sich in die Sonne und schlief sofort ein.',
+    'Leider hatten sich inzwischen Ameisen über den Kuchen hergemacht.',
+    'Trotzdem war es ein wunderschöner Nachmittag.'
+  ]},
+  {id:'zahnarzt', title:'Bei der Zahnärztin', a:[
+    'Gestern hatte ich einen Termin bei der Zahnärztin.',
+    'Im Wartezimmer war ich ein bisschen nervös.',
+    'Die Zahnärztin begrüßte mich freundlich und zeigte mir ihre Geräte.',
+    'Dann musste ich mich auf den großen Stuhl legen und den Mund weit öffnen.',
+    'Mit einem kleinen Spiegel untersuchte sie jeden Zahn.'
+  ], b:[
+    'Zum Glück hatte ich kein einziges Loch.',
+    'Sie lobte mich, weil ich meine Zähne so gründlich putze.',
+    'Danach erklärte sie mir, wie man Zahnseide richtig benutzt.',
+    'Zur Belohnung durfte ich mir ein kleines Geschenk aussuchen.',
+    'Ich nahm einen Radiergummi in der Form eines Dinosauriers.'
+  ]},
+  {id:'baumhaus', title:'Das Baumhaus', a:[
+    'In den Ferien bauten wir mit Opa ein Baumhaus.',
+    'Es steht in einer alten Eiche ganz hinten im Garten.',
+    'Zuerst sägten wir die Bretter auf die richtige Länge.',
+    'Dann nagelten wir sie vorsichtig an den dicken Ästen fest.',
+    'Ich habe mir dabei einmal auf den Daumen gehauen.'
+  ], b:[
+    'Nach drei Tagen war das Baumhaus endlich fertig.',
+    'Es hat ein kleines Fenster und eine Strickleiter.',
+    'Oben haben wir Kissen, Taschenlampen und ein paar Bücher.',
+    'Am liebsten sitze ich dort mit meinem Freund und wir erzählen uns Geschichten.',
+    'Erwachsene dürfen nur hinauf, wenn sie das Passwort kennen.'
+  ]},
+  {id:'schulgarten', title:'Der Schulgarten', a:[
+    'An unserer Schule gibt es einen großen Schulgarten.',
+    'Jede Klasse hat dort ein eigenes Beet.',
+    'Im Frühling haben wir Möhren, Radieschen und Salat gesät.',
+    'Jeden Morgen hat ein anderes Kind die Pflanzen gegossen.',
+    'Bald zeigten sich die ersten grünen Blätter.'
+  ], b:[
+    'Leider hatten auch die Schnecken großen Hunger.',
+    'Deshalb sammelten wir sie ein und brachten sie auf eine Wiese.',
+    'Im Sommer konnten wir endlich ernten.',
+    'Die Radieschen waren knackig und ein bisschen scharf.',
+    'Aus dem Salat machten wir mit unserer Lehrerin ein leckeres Frühstück.'
+  ]},
+  {id:'kino', title:'Im Kino', a:[
+    'Zum Geburtstag hat mich meine Tante ins Kino eingeladen.',
+    'Wir kauften uns eine große Tüte Popcorn und zwei Getränke.',
+    'Der Saal war dunkel und die Sessel waren sehr bequem.',
+    'Vor dem Film lief viel Werbung, die ich ziemlich langweilig fand.',
+    'Dann begann endlich der Film über einen mutigen Fuchs.'
+  ], b:[
+    'Der Fuchs musste seine Familie vor einem gefährlichen Jäger retten.',
+    'An manchen Stellen war es so spannend, dass ich mir die Augen zuhielt.',
+    'Am Ende ging aber alles gut aus.',
+    'Als das Licht wieder anging, war das Popcorn längst leer.',
+    'Auf dem Heimweg erzählten wir uns noch lange von unseren Lieblingsszenen.'
+  ]},
+  {id:'berge', title:'Wanderung in den Bergen', a:[
+    'In den Osterferien fuhren wir in die Berge.',
+    'Gleich am ersten Tag wanderten wir zu einer Hütte hinauf.',
+    'Der Weg war steil und steinig.',
+    'Nach zwei Stunden taten mir die Füße weh.',
+    'Doch die Aussicht von oben war wunderschön.'
+  ], b:[
+    'Unter uns lag ein blauer See und die Häuser im Tal waren winzig klein.',
+    'In der Hütte aßen wir Suppe und tranken heiße Schokolade.',
+    'Auf dem Rückweg sahen wir sogar ein Murmeltier.',
+    'Es pfiff laut und verschwand blitzschnell in seinem Bau.',
+    'Am Abend schlief ich sofort ein, weil ich so müde war.'
+  ]},
+  {id:'schluessel', title:'Der verlorene Schlüssel', a:[
+    'Als ich gestern aus der Schule kam, war die Haustür verschlossen.',
+    'Ich suchte in meinem Rucksack nach dem Schlüssel.',
+    'Doch ich konnte ihn nirgends finden.',
+    'Meine Eltern waren noch bei der Arbeit und ich wusste nicht weiter.',
+    'Zum Glück wohnt nebenan eine nette alte Dame.'
+  ], b:[
+    'Sie ließ mich herein und gab mir ein Glas Saft.',
+    'Von ihrem Telefon aus rief ich meine Mutter an.',
+    'Sie versprach mir, dass sie bald nach Hause kommt.',
+    'Eine halbe Stunde später stand sie vor der Tür.',
+    'Abends fand ich den Schlüssel in meiner Jackentasche.'
+  ]},
+  {id:'eule', title:'Die Eule', a:[
+    'Eulen sind Vögel, die vor allem nachts unterwegs sind.',
+    'Mit ihren großen Augen können sie auch im Dunkeln gut sehen.',
+    'Außerdem hören sie so gut, dass sie sogar eine Maus unter dem Schnee entdecken.',
+    'Ihren Kopf können Eulen sehr weit nach hinten drehen.',
+    'Wenn sie fliegen, hört man fast kein Geräusch.'
+  ], b:[
+    'Tagsüber schlafen die meisten Eulen in Baumhöhlen oder alten Scheunen.',
+    'Sie fressen vor allem Mäuse, aber auch Insekten und kleine Vögel.',
+    'Die Reste, die sie nicht verdauen können, würgen sie wieder heraus.',
+    'Diese kleinen Ballen nennt man Gewölle.',
+    'Forscher können daran erkennen, was die Eule gefressen hat.'
+  ]},
+  {id:'pinguine', title:'Die Pinguine', a:[
+    'Pinguine sind Vögel, die nicht fliegen können.',
+    'Dafür sind sie ausgezeichnete Schwimmer.',
+    'Unter Wasser bewegen sie ihre Flügel wie Flossen.',
+    'Die meisten Pinguine leben auf der Südhalbkugel der Erde.',
+    'Kaiserpinguine leben sogar in der eisigen Antarktis.'
+  ], b:[
+    'Dort ist es im Winter dunkel und bitterkalt.',
+    'Damit sie nicht frieren, stehen die Pinguine eng zusammen.',
+    'Die Tiere in der Mitte haben es am wärmsten.',
+    'Nach einer Weile tauschen sie die Plätze, damit niemand zu lange außen steht.',
+    'Die Väter wärmen das Ei auf ihren Füßen, bis das Küken schlüpft.'
+  ]},
+  {id:'fruehling', title:'Der Frühling kommt', a:[
+    'Nach dem langen Winter wird es endlich wieder wärmer.',
+    'Die Tage werden länger und die Sonne scheint öfter.',
+    'Im Garten blühen die ersten Schneeglöckchen und Krokusse.',
+    'Morgens weckt mich das fröhliche Zwitschern der Vögel.',
+    'Die Amseln bauen in unserer Hecke schon ihr Nest.'
+  ], b:[
+    'Am Nachmittag können wir endlich wieder draußen spielen.',
+    'Ich hole mein Fahrrad aus dem Keller und pumpe die Reifen auf.',
+    'Mit meinen Freunden fahre ich zum Spielplatz am Bach.',
+    'Dort bauen wir aus Steinen und Ästen einen kleinen Staudamm.',
+    'Wenn wir abends nach Hause kommen, sind unsere Schuhe voller Matsch.'
+  ]},
+  {id:'projektwoche', title:'Die Projektwoche', a:[
+    'Vor den Sommerferien hatten wir an unserer Schule eine Projektwoche.',
+    'Jedes Kind durfte sich ein Thema aussuchen.',
+    'Ich habe mich für das Projekt über Ritter entschieden.',
+    'Wir bastelten Schwerter und Schilde aus Pappe.',
+    'Außerdem lernten wir, wie die Menschen damals gelebt haben.'
+  ], b:[
+    'Eine andere Gruppe hat einen Film über unsere Schule gedreht.',
+    'Am Freitag fand ein großes Fest statt.',
+    'Alle Gruppen stellten vor, was sie in der Woche gemacht hatten.',
+    'Viele Eltern und Großeltern kamen zu Besuch.',
+    'Zum Schluss gab es Würstchen, Salate und einen riesigen Kuchen.'
+  ]},
+  {id:'baeckerei', title:'In der Backstube', a:[
+    'Mit unserer Klasse besuchten wir eine Bäckerei.',
+    'Der Bäcker zeigte uns seine Backstube hinter dem Laden.',
+    'Er erzählte, dass er jede Nacht schon um drei Uhr aufsteht.',
+    'In großen Schüsseln rührte eine Maschine den Teig.',
+    'Überall lag Mehl und es roch herrlich nach frischem Brot.'
+  ], b:[
+    'Jedes Kind durfte eine eigene Brezel formen.',
+    'Das war schwieriger, als es aussah.',
+    'Meine Brezel sah zuerst aus wie eine Schlange.',
+    'Nach dem Backen schmeckte sie trotzdem köstlich.',
+    'Zum Abschied schenkte uns der Bäcker noch eine Tüte Plätzchen.'
+  ]},
+  {id:'feuerwehr', title:'Bei der Feuerwehr', a:[
+    'Am Tag der offenen Tür besuchten wir die Feuerwache.',
+    'In der großen Halle standen drei rote Feuerwehrautos.',
+    'Ein Feuerwehrmann erklärte uns, wie ein Einsatz abläuft.',
+    'Wenn der Alarm ertönt, müssen alle innerhalb weniger Minuten losfahren.',
+    'Wir durften sogar in den Wagen klettern und die Sirene anschalten.'
+  ], b:[
+    'Danach probierten wir einen schweren Helm und eine Jacke an.',
+    'Mit einem Schlauch spritzten wir auf ein kleines Holzhaus.',
+    'Zum Schluss fuhr die Drehleiter hoch in den Himmel hinauf.',
+    'Oben stand ein Feuerwehrmann und winkte uns zu.',
+    'Seit diesem Tag möchte mein Bruder unbedingt zur Feuerwehr.'
+  ]},
+  {id:'ferienlager', title:'Im Ferienlager', a:[
+    'In den Sommerferien fuhr ich zum ersten Mal in ein Ferienlager.',
+    'Wir schliefen in großen Zelten am Rand eines Waldes.',
+    'In meinem Zelt waren fünf andere Jungen.',
+    'Abends saßen wir am Lagerfeuer und grillten Stockbrot.',
+    'Ein Betreuer spielte Gitarre und wir sangen Lieder.'
+  ], b:[
+    'In der ersten Nacht konnte ich kaum schlafen.',
+    'Draußen raschelte es im Gebüsch und eine Eule rief.',
+    'Am nächsten Morgen sahen wir, dass ein Igel um unser Zelt geschlichen war.',
+    'Tagsüber machten wir Ausflüge und spielten Fußball.',
+    'Am letzten Tag wollte keiner von uns nach Hause fahren.'
+  ]},
+  {id:'handy', title:'Das erste Handy', a:[
+    'Zum Geburtstag habe ich mein erstes eigenes Handy bekommen.',
+    'Ich habe mich riesig darüber gefreut.',
+    'Meine Eltern haben aber mit mir feste Regeln vereinbart.',
+    'Während der Hausaufgaben bleibt das Handy in der Küche.',
+    'Beim Essen liegt es ausgeschaltet in einer Schublade.'
+  ], b:[
+    'Abends darf ich es nur eine halbe Stunde benutzen.',
+    'Am Anfang fand ich diese Regeln ziemlich streng.',
+    'Inzwischen merke ich aber, dass ich mich besser konzentrieren kann.',
+    'Außerdem habe ich wieder mehr Zeit zum Lesen und Spielen.',
+    'Mit meiner Oma telefoniere ich jetzt jeden Sonntag per Video.'
+  ]},
+  {id:'drache', title:'Der kleine Drache', a:[
+    'Es war einmal ein kleiner Drache, der kein Feuer spucken konnte.',
+    'Die anderen Drachen lachten ihn deshalb oft aus.',
+    'Traurig zog er in die Welt hinaus.',
+    'Unterwegs traf er eine alte Eule, die sehr weise war.',
+    'Sie gab ihm den Rat, jeden Tag fleißig zu üben.'
+  ], b:[
+    'Der kleine Drache übte morgens, mittags und abends.',
+    'Zuerst kam nur ein wenig Rauch aus seinem Maul.',
+    'Doch eines Tages schoss plötzlich eine helle Flamme heraus.',
+    'Stolz flog er nach Hause zu den anderen Drachen.',
+    'Von nun an lachte niemand mehr über ihn.'
+  ]},
+  {id:'schatzsuche', title:'Die Schatzsuche', a:[
+    'Auf dem Dachboden fand ich eine alte Karte.',
+    'Darauf war ein Weg zu einem roten Kreuz eingezeichnet.',
+    'Zusammen mit meiner Schwester machte ich mich auf die Suche.',
+    'Wir liefen zuerst bis zur großen Kastanie am Ende der Straße.',
+    'Von dort aus zählten wir zwanzig Schritte in Richtung Bach.'
+  ], b:[
+    'Unter einem großen Stein entdeckten wir eine verrostete Dose.',
+    'Mit zitternden Händen öffneten wir den Deckel.',
+    'In der Dose lagen ein paar Murmeln und ein Zettel.',
+    'Auf dem Zettel stand, dass unser Vater die Dose als Kind versteckt hatte.',
+    'Abends erzählte er uns lachend von seinen eigenen Abenteuern.'
+  ]},
+  {id:'tierheim', title:'Im Tierheim', a:[
+    'Am Samstag halfen wir im Tierheim unserer Stadt.',
+    'Dort leben Hunde, Katzen und Kaninchen, die kein Zuhause haben.',
+    'Eine Pflegerin zeigte uns die Gehege und erklärte uns die Arbeit.',
+    'Zuerst putzten wir die Näpfe und füllten frisches Wasser ein.',
+    'Danach durften wir mit zwei Hunden spazieren gehen.'
+  ], b:[
+    'Der eine Hund hieß Max und zog die ganze Zeit an der Leine.',
+    'Die andere Hündin war schon alt und lief ganz gemütlich neben uns her.',
+    'Später saßen wir bei den Katzen und spielten mit ihnen.',
+    'Eine kleine schwarze Katze schlief sogar auf meinem Schoß ein.',
+    'Am liebsten hätte ich sie sofort mit nach Hause genommen.'
   ]}
 ]
 };
